@@ -14,7 +14,7 @@ services:
 #### NODE
   app:
     build:
-      context: ./docker/node
+      context: .
     ports:
       - '3000:3000'
     volumes:
