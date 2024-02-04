@@ -10,17 +10,25 @@ services:
 #      - ./pgdata:/var/lib/postgresql/data
 #    ports:
 #      - '5432:5432'
+
+#### NODE
   app:
     build:
-      context: .
-      dockerfile: node/Dockerfile
+      context: ./docker/node
     container_name: nest-docker-postgres
     ports:
       - '3000:3000'
-#    depends_on:
-#      - db
     volumes:
       - ./src:/app/src
+
+##### NGINX
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+
 #  pgadmin:
 #    image: dpage/pgadmin4
 #    restart: always
