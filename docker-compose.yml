@@ -1,4 +1,9 @@
 version: '3.5'
+
+networks:
+  app-network:
+    driver: bridge
+
 services:
 #  db:
 #    image: postgres
@@ -19,6 +24,8 @@ services:
       - '3000:3000'
     volumes:
       - ./src:/app/src
+    networks:
+      - app-network
 
 ##### NGINX
   nginx:
@@ -26,7 +33,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - app-network
 
 #  pgadmin:
 #    image: dpage/pgadmin4
