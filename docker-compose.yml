@@ -15,7 +15,6 @@ services:
   app:
     build:
       context: ./docker/node
-    container_name: nest-docker-postgres
     ports:
       - '3000:3000'
     volumes:
