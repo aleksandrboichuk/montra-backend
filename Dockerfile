@@ -12,7 +12,7 @@ COPY ./package*.json ./
 RUN npm install
 
 # Copy the rest of the application code into the container
-COPY docker/node ./
+COPY ./ ./
 
 # Expose the port that the application listens on
 EXPOSE 3000
