@@ -1,7 +1,13 @@
 import {Body, Controller, Post, Request, UseGuards} from '@nestjs/common';
 import {AuthService} from "./auth.service";
 import {SignupUserDto} from "../user/dto/signup-user.dto";
-import {ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiOperation, ApiTags} from "@nestjs/swagger";
+import {
+    ApiBadRequestResponse, ApiBearerAuth,
+    ApiBody,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags
+} from "@nestjs/swagger";
 import {LocalAuthGuard} from "./guards/local-auth.guard";
 import {JwtRefreshGuard} from "./guards/jwt-refresh.guard";
 
@@ -15,8 +21,8 @@ export class AuthController {
     @ApiOkResponse({schema: {
             type: 'object',
             properties: {
-                access_token: {description: "Access Bearer Token", type: "string"},
-                user: {description: "User Data", type: "object"}
+                accessToken: {description: "Access Bearer Token", type: "string"},
+                refreshToken: {description: "Refresh Bearer Token", type: "string"}
             },
     }, description: "User successfully registered and logged in"})
     @ApiBadRequestResponse({schema: {
@@ -45,8 +51,8 @@ export class AuthController {
     @ApiOkResponse({schema: {
             type: 'object',
             properties: {
-                access_token: {description: "Access Bearer Token", type: "string"},
-                user: {description: "User Data", type: "object"}
+                accessToken: {description: "Access Bearer Token", type: "string"},
+                refreshToken: {description: "Refresh Bearer Token", type: "string"}
             },
         }, description: "User successfully logged in"})
     @ApiBadRequestResponse({schema: {
@@ -71,29 +77,21 @@ export class AuthController {
         return this.authService.login(req.user);
     }
 
-    @ApiOperation({description: "Login User"})
+    @ApiOperation({description: "Refresh Bearer Token"})
     @ApiOkResponse({schema: {
             type: 'object',
             properties: {
-                access_token: {description: "Access Bearer Token", type: "string"},
-                user: {description: "User Data", type: "object"}
+                accessToken: {description: "Access Bearer Token", type: "string"},
+                refreshToken: {description: "Refresh Bearer Token", type: "string"}
             },
-        }, description: "User successfully logged in"})
+        }, description: "Token successfully refreshed"})
     @ApiBadRequestResponse({schema: {
             type: 'object',
             properties: {
-                message: {description: "Authentication errors"}
+                message: {description: "Invalid tiken"}
             },
         }})
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                email: {description: "User Email", example: "test@montra.com"},
-                password: {description: "User Password", example: "12345qwerty"},
-            },
-        },
-    })
+    @ApiBearerAuth("Authorization")
     @UseGuards(JwtRefreshGuard)
     @Post("/refresh")
     async refreshToken(@Request() req)
