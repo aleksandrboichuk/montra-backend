@@ -5,19 +5,8 @@ networks:
     driver: bridge
 
 services:
-#  db:
-#    image: postgres
-#    restart: always
-#    environment:
-#      - POSTGRES_PASSWORD=postgres
-#    container_name: postgres
-#    volumes:
-#      - ./pgdata:/var/lib/postgresql/data
-#    ports:
-#      - '5432:5432'
 
 #### NODE
-
   node:
     build:
       context: .
@@ -26,12 +15,16 @@ services:
     volumes:
       - ./src:/app/src
       - /app/node_modules
+    restart: always
+    depends_on:
+      - postgresql
     networks:
       - app-network
 
 ##### NGINX
   nginx:
     image: nginx:latest
+    restart: always
     ports:
       - "80:80"
       - "443:443"
@@ -41,17 +34,37 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - ./nginx/ssl/:/etc/nginx/ssl
+    depends_on:
+      - node
     networks:
       - app-network
 
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    restart: always
-#    container_name: nest-pgadmin4
-#    environment:
-#      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-#      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
-#    ports:
-#      - '5050:80'
-#    depends_on:
-#      - db
+### POSTGRESQL
+  postgresql:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=montra
+      - POSTGRES_USER=montra
+      - POSTGRES_PASSWORD=7ZG2dJ54tRQE
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ../montra-backend.data/pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - app-network
+
+### PG ADMIN
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgresql
+    networks:
+      - app-network
