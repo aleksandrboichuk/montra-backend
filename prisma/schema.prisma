@@ -33,6 +33,7 @@ model User {
   // system fields
   admin                Boolean    @default(false)
   last_login           DateTime?
+  refresh_token        String?
   created_at           DateTime   @default(now())
   updated_at           DateTime   @updatedAt
 

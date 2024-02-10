@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {User, Prisma} from "@prisma/client";
-import * as bcrypt from 'bcrypt'
+import * as argon2 from 'argon2';
 import {PrismaService} from "../prisma/prisma.service";
 import {SignupUserDto} from "./dto/signup-user.dto";
 import {UserFindInterface} from "./interfaces/user-find.interface";
@@ -11,7 +11,7 @@ export class UserService {
 
     async create(data: Prisma.UserCreateInput | SignupUserDto): Promise<User>
     {
-        const password = await bcrypt.hash(data.password, 5)
+        const password = await argon2.hash(data.password)
 
         return this.prisma.user.create({data: {...data, password}});
     }
@@ -22,5 +22,16 @@ export class UserService {
             where: data,
             select
         })
+    }
+
+    async updateRefreshToken(id: string, token: string)
+    {
+        return this.prisma.user.update({where: {
+            id
+        }, data: {
+            refresh_token: await argon2.hash(token)
+        }, select: {
+            id:true
+        }})
     }
 }

@@ -3,22 +3,19 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import {UserModule} from "../user/user.module";
 import {PassportModule} from "@nestjs/passport";
-import {LocalStrategy} from "./local.strategy";
+import {LocalStrategy} from "./strategies/local.strategy";
 import {JwtModule} from "@nestjs/jwt";
-import {jwtConstants} from "./constants";
-import {JwtStrategy} from "./jwt.strategy";
+import {JwtStrategy} from "./strategies/jwt.strategy";
+import {JwtRefreshStrategy} from "./strategies/jwt-refresh.strategy";
 
 @Module({
   exports: [AuthService],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
   imports: [
     UserModule,
     PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '24h' },
-    }),
+    JwtModule.register({}),
   ]
 })
 export class AuthModule {}
