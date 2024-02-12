@@ -12,8 +12,8 @@ datasource db {
 
 model User {
   id                      String     @default(uuid()) @id
-  email                   String     @unique @db.VarChar(20)
-  password                String
+  email                   String     @unique @db.VarChar(50)
+  password                String     @db.Text
 
   // info fields about user
   phone                   String?    @unique
@@ -36,7 +36,7 @@ model User {
   // system fields
   admin                   Boolean    @default(false)
   last_login              DateTime?
-  refresh_token           String?
+  refresh_token           String?    @db.Text
   created_at              DateTime   @default(now())
   updated_at              DateTime   @updatedAt
 

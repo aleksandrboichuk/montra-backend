@@ -1,21 +1,24 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {UserService} from "../user/user.service";
-import {SignupUserDto} from "../user/dto/signup-user.dto";
+import {RegisterUserDto} from "./dto/register-user.dto";
 import * as argon2 from 'argon2';
 import {JwtService} from "@nestjs/jwt";
-import {LoginUserDto} from "../user/dto/login-user.dto";
+import {LoginUserDto} from "./dto/login-user.dto";
+import {MailService} from "../mail/mail.service";
+import {VerifyUserDto} from "./dto/verify-user.dto";
 
 @Injectable()
 export class AuthService {
     constructor(
         private userService: UserService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private mailService: MailService
     ) {}
 
     async validateUser(email: string, password: string): Promise<any>
     {
         const user = await this.userService.findOne(
-            {email},
+            {email, email_verified: true},
             {
                 id: true,
                 password: true
@@ -32,7 +35,7 @@ export class AuthService {
         return null;
     }
 
-    async register(dto: SignupUserDto): Promise<{accessToken: string, refreshToken: string}>
+    async register(dto: RegisterUserDto)
     {
         const userExists = await this.userService.findOne({
                 email: dto.email
@@ -47,17 +50,11 @@ export class AuthService {
 
         const user = await this.userService.create(dto);
 
-        const {accessToken, refreshToken} = await this.getTokens({
-            id: user.id,
-            email: user.email
-        });
+        await this.sendEmailVerificationCode(user.id);
 
-        await this.userService.updateRefreshToken(user.id, refreshToken);
+        const {password, refresh_token, ...userBodyResponse} = user;
 
-        return {
-            accessToken,
-            refreshToken,
-        };
+        return userBodyResponse;
     }
 
     async login(dto: LoginUserDto)
@@ -129,5 +126,58 @@ export class AuthService {
                 ? process.env.JWT_REFRESH_SECRET
                 : process.env.JWT_SECRET
         })
+    }
+
+    async verifyUser(dto: VerifyUserDto)
+    {
+        const user = await this.userService.getUserByEmailVerificationCode(dto.code);
+
+        if(!user){
+            throw new BadRequestException("codeIsIncorrect")
+        }
+
+        await this.userService.setUserEmailVerified(user.id);
+
+        const {accessToken, refreshToken} = await this.getTokens({
+            id: user.id,
+            email: user.email
+        });
+
+        return {
+            accessToken,
+            refreshToken
+        }
+    }
+
+    async sendEmailVerificationCode(userId: string)
+    {
+        const user = await this.userService.findOne({
+            id: userId,
+        }, {
+            id: true,
+            name: true,
+            email: true
+        });
+
+        if(!user){
+            throw new BadRequestException("User not found");
+        }
+
+        const code = this.generateVerificationCode(6);
+
+        await this.userService.updateEmailVerificationCode(user.id, code);
+
+        return this.mailService.sendVerificationCode(code, user.email, user.name);
+    }
+
+    generateVerificationCode(length: number)
+    {
+        let code = '';
+        const characters = '0123456789';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            code += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return code;
     }
 }

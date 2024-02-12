@@ -7,6 +7,7 @@ import {LocalStrategy} from "./strategies/local.strategy";
 import {JwtModule} from "@nestjs/jwt";
 import {JwtStrategy} from "./strategies/jwt.strategy";
 import {JwtRefreshStrategy} from "./strategies/jwt-refresh.strategy";
+import {MailModule} from "../mail/mail.module";
 
 @Module({
   exports: [AuthService],
@@ -16,6 +17,7 @@ import {JwtRefreshStrategy} from "./strategies/jwt-refresh.strategy";
     UserModule,
     PassportModule,
     JwtModule.register({}),
+    MailModule
   ]
 })
 export class AuthModule {}
