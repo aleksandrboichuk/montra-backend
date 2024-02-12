@@ -19,7 +19,7 @@ async function bootstrap() {
   // swagger
   const config = new DocumentBuilder()
       .setTitle('Montra API')
-      .setDescription('The cats API description')
+      .setDescription('The Montra API description')
       .setVersion('1.0')
       .build();
   const document = SwaggerModule.createDocument(app, config);

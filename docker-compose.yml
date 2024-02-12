@@ -13,7 +13,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./src:/app/src
+      - .:/app
       - /app/node_modules
     restart: always
     depends_on:

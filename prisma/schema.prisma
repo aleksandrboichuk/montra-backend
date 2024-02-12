@@ -11,33 +11,53 @@ datasource db {
 }
 
 model User {
-  id                   String     @default(uuid()) @id
-  email                String     @unique @db.VarChar(20)
-  password             String
+  id                      String     @default(uuid()) @id
+  email                   String     @unique @db.VarChar(20)
+  password                String
 
   // info fields about user
-  phone                String?    @unique
-  name                 String?    @db.VarChar(50)
-  avatar               String?
-  age                  Int?
-  country              String?    @db.VarChar(20)
-  locale               String?    @db.VarChar(3)
-  phone_verified       Boolean    @default(false)
-  email_verified       Boolean    @default(false)
-  email_verified_at    DateTime?
+  phone                   String?    @unique
+  name                    String?    @db.VarChar(50)
+  avatar                  String?
+  age                     Int?
+  country                 String?    @db.VarChar(20)
+  locale                  String?    @db.VarChar(3)
+  email_verification_code String?
+  phone_verification_code String?
+  phone_verified          Boolean    @default(false)
+  email_verified          Boolean    @default(false)
+  email_verified_at       DateTime?
+  phone_verified_at       DateTime?
 
   //social network fields
-  social_network       SocialNetwork?
-  social_network_id    String?
+  social_network          SocialNetwork?
+  social_network_id       String?
 
   // system fields
-  admin                Boolean    @default(false)
-  last_login           DateTime?
-  refresh_token        String?
-  created_at           DateTime   @default(now())
-  updated_at           DateTime   @updatedAt
+  admin                   Boolean    @default(false)
+  last_login              DateTime?
+  refresh_token           String?
+  created_at              DateTime   @default(now())
+  updated_at              DateTime   @updatedAt
+
+  // relations
+  password_resets         PasswordResets[]
 
   @@map("users")
+}
+
+model PasswordResets {
+  id                      String     @default(uuid()) @id
+  user_id                 String
+  code                    String
+  active                  Boolean    @default(true)
+  created_at              DateTime   @default(now())
+  updated_at              DateTime   @updatedAt
+
+  // relations
+  user                    User       @relation(fields: [user_id], references: [id])
+
+  @@map("password_resets")
 }
 
 enum SocialNetwork {
