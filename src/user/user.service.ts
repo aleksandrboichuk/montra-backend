@@ -23,7 +23,7 @@ export class UserService {
         })
     }
 
-    async updateRefreshToken(id: string, token: string)
+    async updateRefreshToken(id: string, token: string): Promise<{id: string}>
     {
         return this.prisma.user.update({where: {
             id
@@ -34,7 +34,7 @@ export class UserService {
         }})
     }
 
-    async updatePassword(id: string, password: string)
+    async updatePassword(id: string, password: string): Promise<{id: string}>
     {
         return this.prisma.user.update({where: {
                 id
@@ -45,7 +45,7 @@ export class UserService {
             }})
     }
 
-    async getUserByEmailVerificationCode(code: string)
+    async getUserByEmailVerificationCode(code: string): Promise<Prisma.UserGetPayload<any>>
     {
         return this.findOne({email_verification_code: code}, {
             id: true,
@@ -53,7 +53,7 @@ export class UserService {
         });
     }
 
-    async updateEmailVerificationCode(userId: string, code: string|null)
+    async updateEmailVerificationCode(userId: string, code: string|null): Promise<any>
     {
         return this.prisma.user.update({
             data: {

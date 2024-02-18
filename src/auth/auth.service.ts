@@ -6,6 +6,7 @@ import {JwtService} from "@nestjs/jwt";
 import {LoginUserDto} from "./dto/login-user.dto";
 import {MailService} from "../mail/mail.service";
 import {VerifyUserDto} from "./dto/verify-user.dto";
+import {Prisma, User} from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,7 @@ export class AuthService {
 
     async validateUser(email: string, password: string): Promise<any>
     {
-        const user = await this.userService.findOne(
+        const user: Prisma.UserGetPayload<any> = await this.userService.findOne(
             {email, email_verified: true},
             {
                 id: true,
@@ -37,7 +38,7 @@ export class AuthService {
 
     async register(dto: RegisterUserDto)
     {
-        const userExists = await this.userService.findOne({
+        const userExists: Prisma.UserGetPayload<any> = await this.userService.findOne({
                 email: dto.email
             }, {
                 id: true
@@ -48,7 +49,7 @@ export class AuthService {
             throw new BadRequestException("User with this email already exists.")
         }
 
-        const user = await this.userService.create(dto);
+        const user: User = await this.userService.create(dto);
 
         await this.sendEmailVerificationCode(user.id);
 
@@ -57,9 +58,9 @@ export class AuthService {
         return userBodyResponse;
     }
 
-    async login(dto: LoginUserDto)
+    async login(dto: LoginUserDto): Promise<{accessToken: string, refreshToken: string}>
     {
-        const user = await this.userService.findOne({
+        const user: Prisma.UserGetPayload<any> = await this.userService.findOne({
             email: dto.email
         });
 
@@ -76,9 +77,9 @@ export class AuthService {
         }
     }
 
-    async refreshToken(userId: string, token: string)
+    async refreshToken(userId: string, token: string): Promise<{accessToken: string, refreshToken: string}>
     {
-        const user = await this.userService.findOne({
+        const user: Prisma.UserGetPayload<any> = await this.userService.findOne({
             id:userId
         }, {
             id: true,
@@ -103,7 +104,7 @@ export class AuthService {
         };
     }
 
-    async getTokens(payload: object)
+    async getTokens(payload: object): Promise<{accessToken: string, refreshToken: string}>
     {
         const [accessToken, refreshToken] = await Promise.all([
             this.generateToken(payload),
@@ -116,7 +117,7 @@ export class AuthService {
         }
     }
 
-    async generateToken(payload: object, refresh: boolean = false)
+    async generateToken(payload: object, refresh: boolean = false): Promise<string>
     {
         return this.jwtService.signAsync(payload, {
             expiresIn: refresh
@@ -128,9 +129,9 @@ export class AuthService {
         })
     }
 
-    async verifyUser(dto: VerifyUserDto)
+    async verifyUser(dto: VerifyUserDto): Promise<{accessToken: string, refreshToken: string}>
     {
-        const user = await this.userService.getUserByEmailVerificationCode(dto.code);
+        const user: Prisma.UserGetPayload<any> = await this.userService.getUserByEmailVerificationCode(dto.code);
 
         if(!user){
             throw new BadRequestException("codeIsIncorrect")
@@ -149,9 +150,9 @@ export class AuthService {
         }
     }
 
-    async sendEmailVerificationCode(userId: string)
+    async sendEmailVerificationCode(userId: string): Promise<boolean>
     {
-        const user = await this.userService.findOne({
+        const user: Prisma.UserGetPayload<any> = await this.userService.findOne({
             id: userId,
         }, {
             id: true,
@@ -162,20 +163,19 @@ export class AuthService {
         if(!user){
             throw new BadRequestException("User not found");
         }
-
-        const code = this.generateVerificationCode(6);
+        const code: string = this.generateVerificationCode(6);
 
         await this.userService.updateEmailVerificationCode(user.id, code);
 
         return this.mailService.sendVerificationCode(code, user.email, user.name);
     }
 
-    generateVerificationCode(length: number)
+    generateVerificationCode(length: number): string
     {
-        let code = '';
-        const characters = '0123456789';
-        const charactersLength = characters.length;
-        for (let i = 0; i < length; i++) {
+        let code: string = '';
+        const characters: '0123456789' = '0123456789';
+        const charactersLength: number = characters.length;
+        for (let i: number = 0; i < length; i++) {
             code += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return code;

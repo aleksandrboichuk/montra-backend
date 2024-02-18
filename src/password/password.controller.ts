@@ -27,7 +27,8 @@ export class PasswordController {
             },
         }})
     @Post("/forgot")
-    async forgotPassword(@Body() dto: ForgotPasswordDto){
+    async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<{success: boolean}>
+    {
         return {
             success: await this.passwordService.sendForgotPasswordLink(dto)
         };
@@ -47,7 +48,8 @@ export class PasswordController {
             },
     }})
     @Get("/reset/validate/:code")
-    async validateCode(@Param("code") code : string) {
+    async validateCode(@Param("code") code : string): Promise<{userId: string}>
+    {
         return {
             userId: await this.passwordService.getUserIdByCode(code)
         };
@@ -67,7 +69,8 @@ export class PasswordController {
             },
         }})
     @Post("/reset")
-    async resetPassword(@Body() dto: ResetPasswordDto){
+    async resetPassword(@Body() dto: ResetPasswordDto): Promise<{success: boolean}>
+    {
         return {
             success: await this.passwordService.resetPassword(dto)
         };

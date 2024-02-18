@@ -6,13 +6,12 @@ import * as process from "process";
 @Injectable()
 export class MailService {
 
-    constructor(private mailerService: MailerService) {
-        
-    }
+    constructor(private mailerService: MailerService) {}
 
-    async sendPasswordResetLink(code: string, email: string, name: String){
+    async sendPasswordResetLink(code: string, email: string, name: string): Promise<boolean>
+    {
 
-        const link = `${process.env.APP_NAME}://${code}`
+        const link: string = `${process.env.APP_NAME}://${code}`
 
         return this.sendMail(
             email,
@@ -22,16 +21,18 @@ export class MailService {
         )
     }
 
-    async sendVerificationCode(verificationCode: string, email: string, firstName: String){
+    async sendVerificationCode(verificationCode: string, email: string, name: string): Promise<boolean>
+    {
         return this.sendMail(
             email,
             "[Montra] Email Verification",
             'verification',
-            {email, verificationCode}
+            {email, verificationCode, name}
         )
     }
 
-    async sendMail(email: string, subject: string, template: string, context = {} ) {
+    async sendMail(email: string, subject: string, template: string, context: object = {} ): Promise<boolean>
+    {
 
         await this.setTransport();
 
@@ -51,7 +52,8 @@ export class MailService {
         return true
     }
 
-    private async setTransport() {
+    private async setTransport(): Promise<void>
+    {
         const config: Options = {
             service: 'gmail',
             auth: {

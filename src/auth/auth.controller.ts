@@ -43,7 +43,7 @@ export class AuthController {
         },
     })
     @Post("/register")
-    async register(@Body() dto: RegisterUserDto)
+    async register(@Body() dto: RegisterUserDto): Promise<{data: object}>
     {
         return {
             data: await this.authService.register(dto)
@@ -75,7 +75,7 @@ export class AuthController {
     })
     @UseGuards(LocalAuthGuard)
     @Post("/login")
-    async login(@Request() req)
+    async login(@Request() req): Promise<{accessToken: string, refreshToken: string}>
     {
         return this.authService.login(req.user);
     }
@@ -97,7 +97,7 @@ export class AuthController {
     @ApiBearerAuth("Authorization")
     @UseGuards(JwtRefreshGuard)
     @Post("/refresh")
-    async refreshToken(@Request() req)
+    async refreshToken(@Request() req): Promise<{accessToken: string, refreshToken: string}>
     {
         return this.authService.refreshToken(req.user.id, req.user.refreshToken);
     }
@@ -125,7 +125,7 @@ export class AuthController {
         },
     })
     @Post("/verification/email/verify")
-    async verifyEmail(@Body() dto: VerifyUserDto)
+    async verifyEmail(@Body() dto: VerifyUserDto): Promise<{accessToken: string, refreshToken: string}>
     {
         return await this.authService.verifyUser(dto);
     }
@@ -152,7 +152,7 @@ export class AuthController {
         },
     })
     @Post("/verification/email/send-letter")
-    async sendEmailVerificationLetter(@Body() dto: EmailVerificationCodeDto)
+    async sendEmailVerificationLetter(@Body() dto: EmailVerificationCodeDto): Promise<{success: boolean}>
     {
         return {
             success: await this.authService.sendEmailVerificationCode(dto.userId)

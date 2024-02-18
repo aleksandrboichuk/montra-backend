@@ -17,14 +17,15 @@ export class PasswordService {
         private mailService: MailService
     ) {}
 
-    async sendForgotPasswordLink(dto: ForgotPasswordDto){
-        const user = await this.userService.findOne(dto, {id:true, name: true})
+    async sendForgotPasswordLink(dto: ForgotPasswordDto): Promise<boolean>
+    {
+        const user: Prisma.UserGetPayload<any> = await this.userService.findOne(dto, {id:true, name: true})
 
         if(!user){
             throw new BadRequestException("User with this email does not exists")
         }
 
-        const code = randomUUID();
+        const code: string = randomUUID();
 
         await this.invalidateUserPasswordResets(user.id)
 
@@ -37,7 +38,8 @@ export class PasswordService {
         return this.prisma.passwordResets.create({data: {user_id: user.id, code}});
     }
 
-    async invalidateUserPasswordResets(userId: string){
+    async invalidateUserPasswordResets(userId: string): Promise<void>
+    {
 
         const userPasswordResetsCount = await this.prisma.passwordResets.count({where: {
                 user_id: userId,
@@ -58,8 +60,9 @@ export class PasswordService {
         }
     }
 
-    async getUserIdByCode(code: string, checkExpiration: boolean = false): Promise<string> {
-        const passwordResetEntry = await this.findOne({
+    async getUserIdByCode(code: string, checkExpiration: boolean = false): Promise<string>
+    {
+        const passwordResetEntry: {user_id: string, created_at: Date} = await this.findOne({
             code,
             active: true
         }, {
@@ -74,11 +77,11 @@ export class PasswordService {
         }
 
         if(checkExpiration){
-            const tokenLifetime = Number(process.env.PASSWORD_RESET_TOKEN_LIFETIME_H) || 2
+            const tokenLifetime: number = Number(process.env.PASSWORD_RESET_TOKEN_LIFETIME_H) || 2
 
-            const today = new Date();
+            const today: Date = new Date();
 
-            const tokenExpirationDate = new Date(passwordResetEntry.created_at)
+            const tokenExpirationDate: number = new Date(passwordResetEntry.created_at)
                 .setHours(today.getHours() + tokenLifetime)
 
             if(tokenExpirationDate < today.getTime()){
@@ -89,7 +92,8 @@ export class PasswordService {
         return passwordResetEntry.user_id;
     }
 
-    async resetPassword(dto: ResetPasswordDto) {
+    async resetPassword(dto: ResetPasswordDto): Promise<boolean>
+    {
         const userId = await this.getUserIdByCode(dto.code, true);
 
         const passwordHasBeenReset = await this.userService.updatePassword(userId, dto.password);
