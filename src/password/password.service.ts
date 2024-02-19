@@ -7,7 +7,7 @@ import {randomUUID} from "crypto";
 import {MailService} from "../mail/mail.service";
 import {ResetPasswordDto} from "./dto/reset-password.dto";
 import * as process from "process";
-import {errors} from "../auth/constants/errors";
+import {errorMessages} from "../auth/constants/error-messages";
 
 @Injectable()
 export class PasswordService {
@@ -74,7 +74,7 @@ export class PasswordService {
         });
 
         if(!passwordResetEntry){
-            throw new BadRequestException(errors.code.incorrect)
+            throw new BadRequestException(errorMessages.code.incorrect)
         }
 
         if(checkExpiration){
@@ -86,7 +86,7 @@ export class PasswordService {
                 .setHours(today.getHours() + tokenLifetime)
 
             if(tokenExpirationDate < today.getTime()){
-                throw new BadRequestException(errors.code.incorrect)
+                throw new BadRequestException(errorMessages.code.incorrect)
             }
         }
 

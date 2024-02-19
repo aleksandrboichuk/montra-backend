@@ -1,4 +1,4 @@
-export const errors = {
+export const errorMessages = {
     name: {
         minLength: "nameMinValue",
         maxLength: "nameMaxValue"
@@ -17,5 +17,8 @@ export const errors = {
     login: {
         incorrectCredentials: "incorrectCredentials",
         emailIsNotVerified: "emailIsNotVerified"
+    },
+    register: {
+        emailAlreadyExists: "userWithThisEmailAlreadyExists"
     }
 }

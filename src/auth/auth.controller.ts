@@ -29,9 +29,9 @@ export class AuthController {
     @ApiBadRequestResponse({schema: {
             type: 'object',
             properties: {
-                message: {description: "Validation errors", type: "object"},
+                message: {description: "Validation errorMessages", type: "object"},
             },
-    }, description: "Request body validation errors"})
+    }, description: "Request body validation errorMessages"})
     @ApiBody({
         schema: {
             type: 'object',
@@ -61,7 +61,7 @@ export class AuthController {
     @ApiBadRequestResponse({schema: {
             type: 'object',
             properties: {
-                message: {description: "Authentication errors"}
+                message: {description: "Authentication errorMessages"}
             },
         }})
     @ApiBody({
@@ -115,7 +115,7 @@ export class AuthController {
             properties: {
                 message: {description: "Verification code error message", type: "object"},
             },
-        }, description: "Verification code errors"})
+        }, description: "Verification code errorMessages"})
     @ApiBody({
         schema: {
             type: 'object',
@@ -140,9 +140,9 @@ export class AuthController {
     @ApiBadRequestResponse({schema: {
             type: 'object',
             properties: {
-                message: {description: "Verification code errors", type: "object"},
+                message: {description: "Verification code errorMessages", type: "object"},
             },
-        }, description: "Request body validation errors"})
+        }, description: "Request body validation errorMessages"})
     @ApiBody({
         schema: {
             type: 'object',
