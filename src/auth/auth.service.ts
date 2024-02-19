@@ -7,6 +7,7 @@ import {LoginUserDto} from "./dto/login-user.dto";
 import {MailService} from "../mail/mail.service";
 import {VerifyUserDto} from "./dto/verify-user.dto";
 import {Prisma, User} from "@prisma/client";
+import {errors} from "./constants/errors";
 
 @Injectable()
 export class AuthService {
@@ -19,10 +20,11 @@ export class AuthService {
     async validateUser(email: string, password: string): Promise<any>
     {
         const user: Prisma.UserGetPayload<any> = await this.userService.findOne(
-            {email, email_verified: true},
+            {email},
             {
                 id: true,
-                password: true
+                password: true,
+                email_verified: true
             }
         );
 
@@ -134,7 +136,7 @@ export class AuthService {
         const user: Prisma.UserGetPayload<any> = await this.userService.getUserByEmailVerificationCode(dto.code);
 
         if(!user){
-            throw new BadRequestException("codeIsIncorrect")
+            throw new BadRequestException(errors.code.incorrect)
         }
 
         await this.userService.setUserEmailVerified(user.id);
