@@ -8,11 +8,14 @@ import {RegisterUserDto} from "../auth/dto/register-user.dto";
 export class UserService {
     constructor(private prisma: PrismaService) {}
 
-    async create(data: Prisma.UserCreateInput | RegisterUserDto): Promise<User>
+    async create(data: Prisma.UserCreateInput | RegisterUserDto): Promise<any>
     {
         const password = await argon2.hash(data.password)
 
-        return this.prisma.user.create({data: {...data, password}});
+        return this.prisma.user.create({
+            data: {...data, password},
+            select: {id: true}
+        });
     }
 
     async findOne(data: Prisma.UserWhereInput, select?: Prisma.UserSelect): Promise<Prisma.UserGetPayload<any>>

@@ -55,9 +55,7 @@ export class AuthService {
 
         await this.sendEmailVerificationCode(user.id);
 
-        const {password, refresh_token, ...userBodyResponse} = user;
-
-        return userBodyResponse;
+        return user;
     }
 
     async login(dto: LoginUserDto): Promise<{accessToken: string, refreshToken: string}>

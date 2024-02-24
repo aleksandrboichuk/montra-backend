@@ -68,5 +68,5 @@ export class MailService {
 
         this.mailerService.addTransporter('gmail', config);
     }
-    
+
 }
