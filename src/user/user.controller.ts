@@ -4,11 +4,12 @@ import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
 import {
     ApiBearerAuth,
     ApiOkResponse,
-    ApiOperation,
+    ApiOperation, ApiTags,
     ApiUnauthorizedResponse
 } from "@nestjs/swagger";
 import {endpointsDoc} from "./docs/endpoints.doc";
 
+@ApiTags("User")
 @Controller('user')
 export class UserController {
     constructor(private userService: UserService) {}
