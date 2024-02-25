@@ -11,21 +11,21 @@ datasource db {
 }
 
 model User {
-  id                      String     @default(uuid()) @id
-  email                   String     @unique @db.VarChar(50)
-  password                String     @db.Text
+  id                      String            @default(uuid()) @id
+  email                   String            @unique @db.VarChar(50)
+  password                String            @db.Text
 
   // info fields about user
-  phone                   String?    @unique
-  name                    String?    @db.VarChar(50)
+  phone                   String?           @unique
+  name                    String?           @db.VarChar(50)
   avatar                  String?
   age                     Int?
-  country                 String?    @db.VarChar(20)
-  locale                  String?    @db.VarChar(3)
+  country                 String?           @db.VarChar(20)
+  locale                  String?           @db.VarChar(3)
   email_verification_code String?
   phone_verification_code String?
-  phone_verified          Boolean    @default(false)
-  email_verified          Boolean    @default(false)
+  phone_verified          Boolean           @default(false)
+  email_verified          Boolean           @default(false)
   email_verified_at       DateTime?
   phone_verified_at       DateTime?
 
@@ -34,34 +34,216 @@ model User {
   social_network_id       String?
 
   // system fields
-  admin                   Boolean    @default(false)
+  admin                   Boolean           @default(false)
   last_login              DateTime?
-  refresh_token           String?    @db.Text
-  created_at              DateTime   @default(now())
-  updated_at              DateTime   @updatedAt
+  refresh_token           String?           @db.Text
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
 
   // relations
   password_resets         PasswordResets[]
+  wallets                 Wallets[]
+  transaction_categories  TransactionCategories[]
 
   @@map("users")
 }
 
 model PasswordResets {
-  id                      String     @default(uuid()) @id
+  id                      String            @default(uuid()) @id
   user_id                 String
   code                    String
-  active                  Boolean    @default(true)
-  created_at              DateTime   @default(now())
-  updated_at              DateTime   @updatedAt
+  active                  Boolean           @default(true)
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
 
   // relations
-  user                    User       @relation(fields: [user_id], references: [id])
+  user                    User              @relation(fields: [user_id], references: [id])
 
   @@map("password_resets")
+}
+
+model Wallets {
+  id                      String            @default(uuid()) @id
+  user_id                 String
+  name                    String
+  balance                 Float             @default(0.0)
+  active                  Boolean           @default(true)
+  currency                CurrencyCodes     @default(USD)
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
+
+  // relations
+  user                    User              @relation(fields: [user_id], references: [id])
+  transactions            WalletTransacions[]
+
+  @@map("wallets")
+}
+
+model WalletTransacions {
+  id                      String            @default(uuid()) @id
+  wallet_id               String
+  amount                  Float
+  description             String            @db.Text
+  type                    TransactionTypes
+  category_id             String
+  transfer_to             String?
+  receipt                 String?
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
+
+  // relations
+  wallet                  Wallets                @relation(fields: [wallet_id], references: [id])
+  category                TransactionCategories  @relation(fields: [category_id], references: [id])
+
+  @@map("wallet_transactions")
+}
+
+model TransactionCategories {
+  id                      String            @default(uuid()) @id
+  name                    String
+  main                    Boolean           @default(false)
+  created_by              String?
+  icon                    String?
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
+
+  // relations
+  transactions            WalletTransacions[]
+  user                    User?             @relation(fields: [created_by], references: [id])
+
+  @@map("transaction_categories")
 }
 
 enum SocialNetwork {
   google
   twitter
   facebook
+}
+
+enum TransactionTypes {
+  expense
+  income
+  transfer
+}
+
+enum CurrencyCodes {
+  USD
+  CAD
+  EUR
+  AED
+  AFN
+  ALL
+  AMD
+  ARS
+  AUD
+  AZN
+  BAM
+  BDT
+  BGN
+  BHD
+  BIF
+  BND
+  BOB
+  BRL
+  BWP
+  BYN
+  BZD
+  CDF
+  CHF
+  CLP
+  CNY
+  COP
+  CRC
+  CVE
+  CZK
+  DJF
+  DKK
+  DOP
+  DZD
+  EEK
+  EGP
+  ERN
+  ETB
+  GBP
+  GEL
+  GHS
+  GNF
+  GTQ
+  HKD
+  HNL
+  HRK
+  HUF
+  IDR
+  ILS
+  INR
+  IQD
+  IRR
+  ISK
+  JMD
+  JOD
+  JPY
+  KES
+  KHR
+  KMF
+  KRW
+  KWD
+  KZT
+  LBP
+  LKR
+  LTL
+  LVL
+  LYD
+  MAD
+  MDL
+  MGA
+  MKD
+  MMK
+  MOP
+  MUR
+  MXN
+  MYR
+  MZN
+  NAD
+  NGN
+  NIO
+  NOK
+  NPR
+  NZD
+  OMR
+  PAB
+  PEN
+  PHP
+  PKR
+  PLN
+  PYG
+  QAR
+  RON
+  RSD
+  RUB
+  RWF
+  SAR
+  SDG
+  SEK
+  SGD
+  SOS
+  SYP
+  THB
+  TND
+  TOP
+  TRY
+  TTD
+  TWD
+  TZS
+  UAH
+  UGX
+  UYU
+  UZS
+  VEF
+  VND
+  XAF
+  XOF
+  YER
+  ZAR
+  ZMK
+  ZWL
 }

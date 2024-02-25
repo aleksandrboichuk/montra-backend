@@ -1,4 +1,4 @@
-export const errorMessages = {
+export const errorMessagesConstant = {
     name: {
         minLength: "nameMinValue",
         maxLength: "nameMaxValue"

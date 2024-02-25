@@ -3,6 +3,7 @@ import {User, Prisma} from "@prisma/client";
 import * as argon2 from 'argon2';
 import {PrismaService} from "../prisma/prisma.service";
 import {RegisterUserDto} from "../auth/dto/register-user.dto";
+import {prismaExclude} from "../prisma/helpers/exclude.helper";
 
 @Injectable()
 export class UserService {
@@ -69,7 +70,7 @@ export class UserService {
         });
     }
 
-    async setUserEmailVerified(userId: string)
+    async setUserEmailVerified(userId: string): Promise<any>
     {
         return this.prisma.user.update({
             where: {
@@ -80,5 +81,38 @@ export class UserService {
                 email_verification_code: null
             }
         })
+    }
+
+    async getProfile(id: string)
+    {
+        return this.prisma.user.findUnique({
+            where: {id},
+            select: {
+                ...prismaExclude('User', [
+                    'password',
+                    'refresh_token',
+                    'last_login',
+                    'created_at',
+                    'updated_at',
+                    'email_verified_at',
+                    'phone_verified_at'
+                ]),
+                wallets: {
+                    select: {
+                        id: true,
+                        name:true,
+                        balance: true,
+                        currency: true
+                    }
+                }
+            },
+        })
+    }
+
+    async deleteUser(userId: string): Promise<any>
+    {
+        return this.prisma.user.delete({where: {
+            id: userId
+        }});
     }
 }

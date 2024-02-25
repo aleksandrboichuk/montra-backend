@@ -7,7 +7,7 @@ import {LoginUserDto} from "./dto/login-user.dto";
 import {MailService} from "../mail/mail.service";
 import {VerifyUserDto} from "./dto/verify-user.dto";
 import {Prisma, User} from "@prisma/client";
-import {errorMessages} from "./constants/error-messages";
+import {errorMessagesConstant} from "./constants/error-messages.constant";
 
 @Injectable()
 export class AuthService {
@@ -48,7 +48,10 @@ export class AuthService {
         );
 
         if(userExists){
-            throw new BadRequestException(errorMessages.register.emailAlreadyExists)
+            // TODO:: test mode
+            await this.userService.deleteUser(userExists.id);
+
+            // throw new BadRequestException(errorMessages.register.emailAlreadyExists)
         }
 
         const user: User = await this.userService.create(dto);
@@ -134,7 +137,7 @@ export class AuthService {
         const user: Prisma.UserGetPayload<any> = await this.userService.getUserByEmailVerificationCode(dto.code);
 
         if(!user){
-            throw new BadRequestException(errorMessages.code.incorrect)
+            throw new BadRequestException(errorMessagesConstant.code.incorrect)
         }
 
         await this.userService.setUserEmailVerified(user.id);

@@ -1,9 +1,28 @@
-import {Controller, Post} from '@nestjs/common';
+import {Controller, Get, Request, UseGuards} from '@nestjs/common';
 import {UserService} from "./user.service";
-import {Prisma} from "@prisma/client";
-import {ApiOperation} from "@nestjs/swagger";
+import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
+import {
+    ApiBearerAuth,
+    ApiOkResponse,
+    ApiOperation,
+    ApiUnauthorizedResponse
+} from "@nestjs/swagger";
+import {endpointsDoc} from "./docs/endpoints.doc";
 
 @Controller('user')
 export class UserController {
     constructor(private userService: UserService) {}
+
+    @ApiOperation({description: "Get user profile"})
+    @ApiOkResponse(endpointsDoc.profile.responses.ok)
+    @ApiUnauthorizedResponse(endpointsDoc.profile.responses.unauthorized)
+    @ApiBearerAuth("Authorization")
+    @Get("profile")
+    @UseGuards(JwtAuthGuard)
+    async profile(@Request() req): Promise<{data: {}}>
+    {
+        return {
+            data: await this.userService.getProfile(req.user.id)
+        }
+    }
 }

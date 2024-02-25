@@ -12,6 +12,7 @@ import {LocalAuthGuard} from "./guards/local-auth.guard";
 import {JwtRefreshGuard} from "./guards/jwt-refresh.guard";
 import {VerifyUserDto} from "./dto/verify-user.dto";
 import {EmailVerificationCodeDto} from "./dto/email-verification-code.dto";
+import {endpointsDoc} from "./docs/endpoints.doc";
 
 @ApiTags("Authorization")
 @Controller('auth')
@@ -20,28 +21,9 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @ApiOperation({description: "Register user"})
-    @ApiOkResponse({schema: {
-            type: 'object',
-            properties: {
-                data: {description: "User item body", type: "boolean"},
-            },
-    }, description: "User successfully registered and logged in"})
-    @ApiBadRequestResponse({schema: {
-            type: 'object',
-            properties: {
-                message: {description: "Validation errorMessages", type: "object"},
-            },
-    }, description: "Request body validation errorMessages"})
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                name: {description: "User name", example: "John"},
-                email: {description: "User email", example: "test@montra.com"},
-                password: {description: "User password", example: "12345qwerty"},
-            },
-        },
-    })
+    @ApiOkResponse(endpointsDoc.register.responses.ok)
+    @ApiBadRequestResponse(endpointsDoc.register.responses.badRequest)
+    @ApiBody(endpointsDoc.register.body)
     @Post("/register")
     async register(@Body() dto: RegisterUserDto): Promise<{data: object}>
     {
@@ -51,28 +33,9 @@ export class AuthController {
     }
 
     @ApiOperation({description: "Login User"})
-    @ApiOkResponse({schema: {
-            type: 'object',
-            properties: {
-                accessToken: {description: "Access bearer token", type: "string"},
-                refreshToken: {description: "Refresh bearer token", type: "string"}
-            },
-        }, description: "User successfully logged in"})
-    @ApiBadRequestResponse({schema: {
-            type: 'object',
-            properties: {
-                message: {description: "Authentication errorMessages"}
-            },
-        }})
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                email: {description: "User Email", example: "test@montra.com"},
-                password: {description: "User Password", example: "12345qwerty"},
-            },
-        },
-    })
+    @ApiOkResponse(endpointsDoc.login.responses.ok)
+    @ApiBadRequestResponse(endpointsDoc.login.responses.badRequest)
+    @ApiBody(endpointsDoc.login.body)
     @UseGuards(LocalAuthGuard)
     @Post("/login")
     async login(@Request() req): Promise<{accessToken: string, refreshToken: string}>
@@ -81,19 +44,8 @@ export class AuthController {
     }
 
     @ApiOperation({description: "Refresh bearer token"})
-    @ApiOkResponse({schema: {
-            type: 'object',
-            properties: {
-                accessToken: {description: "Access bearer token", type: "string"},
-                refreshToken: {description: "Refresh bearer token", type: "string"}
-            },
-        }, description: "Token successfully refreshed"})
-    @ApiBadRequestResponse({schema: {
-            type: 'object',
-            properties: {
-                message: {description: "Invalid token"}
-            },
-    }})
+    @ApiOkResponse(endpointsDoc.refreshToken.responses.ok)
+    @ApiBadRequestResponse(endpointsDoc.refreshToken.responses.badRequest)
     @ApiBearerAuth("Authorization")
     @UseGuards(JwtRefreshGuard)
     @Post("/refresh")
@@ -103,27 +55,9 @@ export class AuthController {
     }
 
     @ApiOperation({description: "User email verification"})
-    @ApiOkResponse({schema: {
-            type: 'object',
-            properties: {
-                accessToken: {description: "Access bearer token", type: "string"},
-                refreshToken: {description: "Refresh bearer token", type: "string"}
-            },
-        }, description: "Email successfully verified and logged in"})
-    @ApiBadRequestResponse({schema: {
-            type: 'object',
-            properties: {
-                message: {description: "Verification code error message", type: "object"},
-            },
-        }, description: "Verification code errorMessages"})
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                code: {description: "Verification code", example: "123456"},
-            },
-        },
-    })
+    @ApiOkResponse(endpointsDoc.verifyEmail.responses.ok)
+    @ApiBadRequestResponse(endpointsDoc.verifyEmail.responses.badRequest)
+    @ApiBody(endpointsDoc.verifyEmail.body)
     @Post("/verification/email/verify")
     async verifyEmail(@Body() dto: VerifyUserDto): Promise<{accessToken: string, refreshToken: string}>
     {
@@ -131,26 +65,9 @@ export class AuthController {
     }
 
     @ApiOperation({description: "User email verification"})
-    @ApiOkResponse({schema: {
-            type: 'object',
-            properties: {
-                success: {description: "Sending result", type: "boolean"},
-            },
-        }, description: "User successfully registered and logged in"})
-    @ApiBadRequestResponse({schema: {
-            type: 'object',
-            properties: {
-                message: {description: "Verification code errorMessages", type: "object"},
-            },
-        }, description: "Request body validation errorMessages"})
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                userId: {description: "User Id", example: "uuid123", type: "numeric"},
-            },
-        },
-    })
+    @ApiOkResponse(endpointsDoc.sendEmailVerificationLetter.responses.ok)
+    @ApiBadRequestResponse(endpointsDoc.sendEmailVerificationLetter.responses.badRequest)
+    @ApiBody(endpointsDoc.sendEmailVerificationLetter.body)
     @Post("/verification/email/send-letter")
     async sendEmailVerificationLetter(@Body() dto: EmailVerificationCodeDto): Promise<{success: boolean}>
     {
