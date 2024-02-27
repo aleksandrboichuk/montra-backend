@@ -1,12 +1,13 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
+import {ForgotPasswordDto} from "./dto/forgot-password.dto";
 import {Prisma} from "@prisma/client";
 import {PrismaService} from "../prisma/prisma.service";
 import {UserService} from "../user/user.service";
 import {randomUUID} from "crypto";
 import {MailService} from "../mail/mail.service";
+import {ResetPasswordDto} from "./dto/reset-password.dto";
+import * as process from "process";
 import {errorMessagesConstant} from "../auth/constants/error-messages.constant";
-import {PASSWORD_RESET_TOKEN_LIFETIME_H} from "@environments";
-import {ForgotPasswordInput, ResetPasswordInput} from "./graphql.schema";
 
 @Injectable()
 export class PasswordService {
@@ -17,9 +18,9 @@ export class PasswordService {
         private mailService: MailService
     ) {}
 
-    async sendForgotPasswordLink(input: ForgotPasswordInput): Promise<boolean>
+    async sendForgotPasswordLink(dto: ForgotPasswordDto): Promise<boolean>
     {
-        const user: Prisma.UserGetPayload<any> = await this.userService.findOne(input, {id:true, name: true})
+        const user: Prisma.UserGetPayload<any> = await this.userService.findOne(dto, {id:true, name: true})
 
         if(!user){
             throw new BadRequestException("User with this email does not exists")
@@ -31,7 +32,7 @@ export class PasswordService {
 
         await this.createPasswordResetEntry(code, user);
 
-        return this.mailService.sendPasswordResetLink(code, input.email, user.name)
+        return this.mailService.sendPasswordResetLink(code, dto.email, user.name)
     }
 
     async createPasswordResetEntry(code: string, user: Prisma.UserGetPayload<any>) {
@@ -77,7 +78,7 @@ export class PasswordService {
         }
 
         if(checkExpiration){
-            const tokenLifetime: number = +PASSWORD_RESET_TOKEN_LIFETIME_H!
+            const tokenLifetime: number = Number(process.env.PASSWORD_RESET_TOKEN_LIFETIME_H) || 2
 
             const today: Date = new Date();
 
@@ -92,11 +93,11 @@ export class PasswordService {
         return passwordResetEntry.user_id;
     }
 
-    async resetPassword(input: ResetPasswordInput): Promise<boolean>
+    async resetPassword(dto: ResetPasswordDto): Promise<boolean>
     {
-        const userId = await this.getUserIdByCode(input.code, true);
+        const userId = await this.getUserIdByCode(dto.code, true);
 
-        const passwordHasBeenReset = await this.userService.updatePassword(userId, input.password);
+        const passwordHasBeenReset = await this.userService.updatePassword(userId, dto.password);
 
         await this.invalidateUserPasswordResets(userId);
 

@@ -3,13 +3,12 @@ import { AppModule } from './app.module';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {BadRequestException, ValidationPipe} from "@nestjs/common";
 import * as process from "process";
-import {APP_PORT} from "@environments";
 
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  const PORT = APP_PORT!
+  const PORT = process.env.APP_PORT || 3000
 
   // app configuration
   app.enableCors();
