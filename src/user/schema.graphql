@@ -1,0 +1,32 @@
+# types
+type User {
+    id: ID!
+    email: String!
+    phone: String
+    name: String
+    avatar: String
+    age: Int
+    country: String
+    locale: String
+    email_verification_code: String
+    phone_verification_code: String
+    phone_verified: Boolean!
+    email_verified: Boolean!
+    social_network: SocialNetworks
+    social_network_id: String
+    admin: Boolean
+}
+
+enum SocialNetworks {
+    google,
+    facebook,
+    twitter
+}
+
+# inputs
+
+
+
+type Query {
+    profile: User
+}
