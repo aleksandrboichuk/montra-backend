@@ -1,12 +1,13 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {UserService} from "../user/user.service";
+import {RegisterUserDto} from "./dto/register-user.dto";
 import * as argon2 from 'argon2';
 import {JwtService} from "@nestjs/jwt";
+import {LoginUserDto} from "./dto/login-user.dto";
 import {MailService} from "../mail/mail.service";
+import {VerifyUserDto} from "./dto/verify-user.dto";
 import {Prisma, User} from "@prisma/client";
 import {errorMessagesConstant} from "./constants/error-messages.constant";
-import {JWT_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_SECRET} from "@environments";
-import {LoginInput, RegisterInput, VerifyEmailInput} from "./graphql.schema";
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,8 @@ export class AuthService {
         private mailService: MailService
     ) {}
 
-    async validateUser(email: string, password: string): Promise<any> {
+    async validateUser(email: string, password: string): Promise<any>
+    {
         const user: Prisma.UserGetPayload<any> = await this.userService.findOne(
             {email},
             {
@@ -36,29 +38,33 @@ export class AuthService {
         return null;
     }
 
-    async register(input: RegisterInput): Promise<User> {
+    async register(dto: RegisterUserDto)
+    {
         const userExists: Prisma.UserGetPayload<any> = await this.userService.findOne({
-                email: input.email
+                email: dto.email
             }, {
                 id: true
             }
         );
 
         if(userExists){
-            throw new BadRequestException(errorMessagesConstant.register.emailAlreadyExists)
+            // TODO:: test mode
+            await this.userService.deleteUser(userExists.id);
+
+            // throw new BadRequestException(errorMessages.register.emailAlreadyExists)
         }
 
-        const user: User = await this.userService.create(input);
+        const user: User = await this.userService.create(dto);
 
         await this.sendEmailVerificationCode(user.id);
 
         return user;
     }
 
-    async login(input: LoginInput): Promise<{accessToken: string, refreshToken: string}>
+    async login(dto: LoginUserDto): Promise<{accessToken: string, refreshToken: string}>
     {
         const user: Prisma.UserGetPayload<any> = await this.userService.findOne({
-            email: input.email
+            email: dto.email
         });
 
         const { accessToken, refreshToken } = await this.getTokens({
@@ -85,7 +91,7 @@ export class AuthService {
         });
 
         if(!user || !await argon2.verify( user.refresh_token, token)){
-            throw new UnauthorizedException("invalidAccessToken");
+            throw new UnauthorizedException();
         }
 
         const {accessToken, refreshToken} = await this.getTokens({
@@ -118,17 +124,17 @@ export class AuthService {
     {
         return this.jwtService.signAsync(payload, {
             expiresIn: refresh
-                ? JWT_REFRESH_EXPIRES_IN!
-                : JWT_EXPIRES_IN!,
+                ? process.env.JWT_REFRESH_EXPIRES_IN
+                : process.env.JWT_EXPIRES_IN,
             secret: refresh
-                ? JWT_REFRESH_SECRET!
-                : JWT_SECRET!
+                ? process.env.JWT_REFRESH_SECRET
+                : process.env.JWT_SECRET
         })
     }
 
-    async verifyUser(input: VerifyEmailInput): Promise<{accessToken: string, refreshToken: string}>
+    async verifyUser(dto: VerifyUserDto): Promise<{accessToken: string, refreshToken: string}>
     {
-        const user: Prisma.UserGetPayload<any> = await this.userService.getUserByEmailVerificationCode(input.code);
+        const user: Prisma.UserGetPayload<any> = await this.userService.getUserByEmailVerificationCode(dto.code);
 
         if(!user){
             throw new BadRequestException(errorMessagesConstant.code.incorrect)

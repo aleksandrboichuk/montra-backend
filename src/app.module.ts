@@ -1,50 +1,39 @@
 import { Module } from '@nestjs/common';
+import {ConfigModule} from "@nestjs/config";
 import { UserModule } from './user/user.module';
+import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { PasswordModule } from './password/password.module';
 import { MailModule } from './mail/mail.module';
 import {MailerModule} from "@nestjs-modules/mailer";
-import {GraphQLModule} from "@nestjs/graphql";
-import {PrismaModule} from "./prisma/prisma.module";
-import {MailConfig} from "./mail/config/mail.config";
-import {GraphQLConfig} from "./graphql/config/graphql.config";
-import {ApolloDriver} from "@nestjs/apollo";
-import {GQL_ENDPOINT, NODE_ENV} from "@environments";
+import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 
 @Module({
   imports: [
-
-      MailerModule.forRootAsync({
-          useClass: MailConfig
+      // defining env file
+      ConfigModule.forRoot({
+        envFilePath: `.env.${process.env.NODE_ENV}`
       }),
 
-      GraphQLModule.forRoot({
-          driver: ApolloDriver,
-          typePaths: ['./**/*.graphql'],
-          path: `${GQL_ENDPOINT!}`,
-          cors: true,
-          bodyParserConfig: {limit: '50mb'},
-          installSubscriptionHandlers: true,
-          formatError: (error) => {
-              return NODE_ENV === "production"
-                  ? error.extensions.originalError
-                  : error
+      MailerModule.forRoot({
+          transport: `smtps://${process.env.MAIL_USERNAME}:${process.env.MAIL_PASSWORD}@smtp.gmail.com`,
+          template: {
+              dir: process.cwd() + '/src/static/templates/',
+              adapter: new HandlebarsAdapter(),
+              options: {
+                  strict: true,
+              },
           },
-          playground: NODE_ENV !== 'production' && {
-              tracing: NODE_ENV !== 'production',
-              installSubscriptionHandlers: true,
-              uploads: {
-                  maxFieldSize: 2, // 1mb
-                  maxFileSize: 20, // 20mb
-                  maxFiles: 5
-              }
-          }
       }),
-      PrismaModule,
+
       UserModule,
+      PrismaModule,
       AuthModule,
       PasswordModule,
       MailModule,
-  ]
+
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
