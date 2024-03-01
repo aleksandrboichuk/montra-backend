@@ -8,6 +8,7 @@ import {MailService} from "../mail/mail.service";
 import {VerifyUserDto} from "./dto/verify-user.dto";
 import {Prisma, User} from "@prisma/client";
 import {errorMessagesConstant} from "./constants/error-messages.constant";
+import {JWT_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_SECRET} from "../environments/environments";
 
 @Injectable()
 export class AuthService {
@@ -124,11 +125,11 @@ export class AuthService {
     {
         return this.jwtService.signAsync(payload, {
             expiresIn: refresh
-                ? process.env.JWT_REFRESH_EXPIRES_IN
-                : process.env.JWT_EXPIRES_IN,
+                ? JWT_REFRESH_EXPIRES_IN
+                : JWT_EXPIRES_IN,
             secret: refresh
-                ? process.env.JWT_REFRESH_SECRET
-                : process.env.JWT_SECRET
+                ? JWT_REFRESH_SECRET
+                : JWT_SECRET
         })
     }
 

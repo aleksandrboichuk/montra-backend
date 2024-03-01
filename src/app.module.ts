@@ -7,16 +7,13 @@ import { PasswordModule } from './password/password.module';
 import { MailModule } from './mail/mail.module';
 import {MailerModule} from "@nestjs-modules/mailer";
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import {GMAIL_MAIL_PASSWORD, GMAIL_MAIL_USERNAME} from "./environments/environments";
 
 @Module({
   imports: [
       // defining env file
-      ConfigModule.forRoot({
-        envFilePath: `.env.${process.env.NODE_ENV}`
-      }),
-
       MailerModule.forRoot({
-          transport: `smtps://${process.env.MAIL_USERNAME}:${process.env.MAIL_PASSWORD}@smtp.gmail.com`,
+          transport: `smtps://${GMAIL_MAIL_USERNAME}:${GMAIL_MAIL_PASSWORD}@smtp.gmail.com`,
           template: {
               dir: process.cwd() + '/src/static/templates/',
               adapter: new HandlebarsAdapter(),

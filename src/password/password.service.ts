@@ -8,6 +8,7 @@ import {MailService} from "../mail/mail.service";
 import {ResetPasswordDto} from "./dto/reset-password.dto";
 import * as process from "process";
 import {errorMessagesConstant} from "../auth/constants/error-messages.constant";
+import {PASSWORD_RESET_TOKEN_LIFETIME_H} from "../environments/environments";
 
 @Injectable()
 export class PasswordService {
@@ -78,7 +79,7 @@ export class PasswordService {
         }
 
         if(checkExpiration){
-            const tokenLifetime: number = Number(process.env.PASSWORD_RESET_TOKEN_LIFETIME_H) || 2
+            const tokenLifetime: number = PASSWORD_RESET_TOKEN_LIFETIME_H
 
             const today: Date = new Date();
 

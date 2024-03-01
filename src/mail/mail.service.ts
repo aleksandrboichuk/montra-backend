@@ -2,6 +2,13 @@ import { Injectable } from '@nestjs/common';
 import {MailerService} from "@nestjs-modules/mailer";
 import { Options } from 'nodemailer/lib/smtp-transport';
 import * as process from "process";
+import {
+    APP_NAME,
+    GMAIL_ACCESS_TOKEN,
+    GMAIL_MAIL_USERNAME, GMAIL_REFRESH_TOKEN,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET
+} from "../environments/environments";
 
 @Injectable()
 export class MailService {
@@ -11,7 +18,7 @@ export class MailService {
     async sendPasswordResetLink(code: string, email: string, name: string): Promise<boolean>
     {
 
-        const link: string = `${process.env.APP_NAME}://${code}`
+        const link: string = `${APP_NAME}://${code}`
 
         return this.sendMail(
             email,
@@ -40,7 +47,7 @@ export class MailService {
             .sendMail({
                 transporterName: 'gmail',
                 to: email,
-                from: process.env.MAIL_USERNAME,
+                from: GMAIL_MAIL_USERNAME,
                 subject: subject,
                 template,
                 context
@@ -58,11 +65,11 @@ export class MailService {
             service: 'gmail',
             auth: {
                 type: 'OAuth2',
-                user: process.env.MAIL_USERNAME,
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET,
-                accessToken: process.env.ACCESS_TOKEN,
-                refreshToken: process.env.REFRESH_TOKEN,
+                user: GMAIL_MAIL_USERNAME,
+                clientId: GOOGLE_CLIENT_ID,
+                clientSecret: GOOGLE_CLIENT_SECRET,
+                accessToken: GMAIL_ACCESS_TOKEN,
+                refreshToken: GMAIL_REFRESH_TOKEN,
             },
         };
 
