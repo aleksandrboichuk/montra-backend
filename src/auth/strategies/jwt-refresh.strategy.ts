@@ -1,7 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
-import * as process from "process";
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {Request} from "express";
 import {JWT_REFRESH_SECRET} from "../../environments/environments";
 
@@ -19,7 +18,11 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     async validate(request: Request, payload: any): Promise<any>
     {
 
-        const refreshToken: string = request.get('Authorization').replace('Bearer', '').trim();
+        const refreshToken: string = request.get('authorization').replace('Bearer', '').trim();
+
+        if(!refreshToken){
+            throw new UnauthorizedException("Incorrect Refresh Token");
+        }
 
         return { ...payload , refreshToken};
     }

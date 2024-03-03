@@ -2,6 +2,8 @@ import * as process from "process";
 
 const NODE_ENV: string =  process.env.NODE_ENV || "dev"
 
+const API_KEY: string = process.env.API_KEY!
+
 const API_DOC_URI: string = `/v${process.env.API_VERSION || "1"}/docs`
 
 const APP_PORT: number = +process.env.APP_PORT || 3000
@@ -31,6 +33,7 @@ const GMAIL_MAIL_PASSWORD: string = process.env.GMAIL_MAIL_PASSWORD;
 export {
     APP_PORT,
     API_DOC_URI,
+    API_KEY,
     NODE_ENV,
     APP_NAME,
     JWT_SECRET,

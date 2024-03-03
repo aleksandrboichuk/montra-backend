@@ -23,7 +23,7 @@ export class MailService {
         return this.sendMail(
             email,
             "[Montra] Reset Password",
-            'reset-password',
+            'reset-passwords',
             {name, email, link}
         )
     }
