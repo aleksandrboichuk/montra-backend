@@ -9,6 +9,7 @@ import {
 } from "@nestjs/swagger";
 import {endpointsDoc} from "./docs/endpoints.doc";
 import {UserDto} from "./dto/user.dto";
+import {BEARER_AUTH_NAME} from "../environments/environments";
 
 @ApiTags("User")
 @Controller('users')
@@ -18,7 +19,7 @@ export class UsersController {
     @ApiOperation({description: "Get user profile"})
     @ApiOkResponse({type: UserDto})
     @ApiUnauthorizedResponse(endpointsDoc.profile.responses.unauthorized)
-    @ApiBearerAuth("Authorization")
+    @ApiBearerAuth(BEARER_AUTH_NAME)
     @Get("profile")
     @UseGuards(JwtAuthGuard)
     async profile(@Request() req): Promise<{data: object}>

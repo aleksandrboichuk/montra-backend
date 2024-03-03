@@ -15,6 +15,7 @@ import {EmailVerificationCodeDto} from "./dto/email-verification-code.dto";
 import {endpointsDoc} from "./docs/endpoints.doc";
 import {AuthTokensDto} from "./dto/auth-tokens.dto";
 import {UserDto} from "../users/dto/user.dto";
+import {BEARER_AUTH_NAME} from "../environments/environments";
 
 @ApiTags("Authorization")
 @Controller('auth')
@@ -47,7 +48,7 @@ export class AuthController {
     @ApiOperation({description: "Refresh bearer token"})
     @ApiOkResponse({type: AuthTokensDto})
     @ApiBadRequestResponse(endpointsDoc.refreshToken.responses.badRequest)
-    @ApiBearerAuth("Authorization")
+    @ApiBearerAuth(BEARER_AUTH_NAME)
     @UseGuards(JwtRefreshGuard)
     @Post("/refresh")
     async refreshToken(@Request() req): Promise<AuthTokensDto>

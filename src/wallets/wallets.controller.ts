@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
 import {WalletsService} from "./wallets.service";
 import {CreateWalletDto} from "./dto/create-wallet.dto";
@@ -10,14 +10,14 @@ import {
     ApiOkResponse,
     ApiOperation,
     ApiTags,
-    ApiUnauthorizedResponse,
-    PickType
+    ApiUnauthorizedResponse
 } from "@nestjs/swagger";
 import {endpointsDoc} from "../common/docs/endpoints.doc";
 import {WalletDto} from "./dto/wallet.dto";
+import {BEARER_AUTH_NAME} from "../environments/environments";
 
 @ApiTags("User wallets")
-@ApiBearerAuth('Authorization')
+@ApiBearerAuth(BEARER_AUTH_NAME)
 @Controller('wallets')
 @UseGuards(JwtAuthGuard)
 @ApiUnauthorizedResponse(endpointsDoc.responses.unauthorized)
@@ -55,31 +55,26 @@ export class WalletsController {
     })
     @Get(":id")
     async findOne(@Param('id') id: string, @CurrentUser() user: UserPayloadDto){
-        return {
-            data: await this.walletService.findOne(id, user)
+        const item = await this.walletService.findOne(id, user);
+        if(!item){
+            throw new NotFoundException();
         }
+        return {data: item}
     }
 
     @ApiOperation({description: "Update user wallet by ID"})
-    @ApiOkResponse({
-        type: PickType(WalletDto, [
-            'id',
-            'name',
-            'balance',
-            'currency_id',
-            'currency',
-            'transactions'
-        ])
-    })
+    @ApiOkResponse({type: WalletDto})
     @Put(":id")
     async update(
         @Param('id') id: string,
         @Body() dto: UpdateWalletDto,
         @CurrentUser() user: UserPayloadDto
     ): Promise<{data: object}> {
-        return {
-            data: await this.walletService.update(id, dto, user)
+        const item = await this.walletService.update(id, dto, user);
+        if(!item){
+            throw new NotFoundException();
         }
+        return {data: item}
     }
 
     @ApiOperation({description: "Delete user wallet by ID"})

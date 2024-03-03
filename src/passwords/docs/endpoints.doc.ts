@@ -6,7 +6,6 @@ export const endpointsDoc = {
                     type: 'object',
                     properties: {
                         success: {description: "Letter sending result", type: "boolean"},
-                        refreshToken: {description: "Refresh bearer token", type: "string"}
                     },
                 }, description: "Letter with reset link was sent"
             },

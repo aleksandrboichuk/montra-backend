@@ -5,7 +5,7 @@ import {PasswordsService} from "./passwords.service";
 import {ResetPasswordDto} from "./dto/reset-password.dto";
 import {endpointsDoc} from "./docs/endpoints.doc";
 
-@ApiTags("User Password Operation")
+@ApiTags("User Passwords Operation")
 @Controller('/auth/passwords')
 export class PasswordsController {
 

@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {BadRequestException, ValidationPipe} from "@nestjs/common";
 import * as process from "process";
-import {API_DOC_URI, APP_PORT} from "./environments/environments";
+import {API_DOC_URI, API_KEY_HEADER_NAME, APP_PORT, BEARER_AUTH_NAME} from "./environments/environments";
 
 async function bootstrap() {
 
@@ -25,6 +25,18 @@ async function bootstrap() {
       .setTitle('Montra API')
       .setDescription('The Montra API description')
       .setVersion('1.0')
+      .addSecurityRequirements(API_KEY_HEADER_NAME)
+      .addApiKey({
+        type: 'apiKey',
+        name: API_KEY_HEADER_NAME,
+        in: 'header'},
+          API_KEY_HEADER_NAME)
+      .addBearerAuth({
+        type: "http",
+        name: "Authorization",
+        bearerFormat: 'Bearer',
+        in: 'header'
+      }, BEARER_AUTH_NAME)
       .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(API_DOC_URI, app, document);

@@ -1,4 +1,4 @@
-import {prismaExclude} from "../../prisma/helpers/exclude.helper";
+import {prismaExclude} from "../../prisma/utils/exclude.util";
 
 export const selectConstant = {
     default: {

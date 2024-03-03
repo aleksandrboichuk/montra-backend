@@ -2,35 +2,45 @@ import { Injectable } from '@nestjs/common';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
 import {PrismaService} from "../prisma/prisma.service";
+import {selectConstant} from "./constants/select.constant";
 
 @Injectable()
-export class CurrenciesService {
+export class CurrenciesService{
 
-  constructor(private prismaService: PrismaService) {
-  }
+  constructor(private prismaService: PrismaService) {}
 
   async create(createCurrencyDto: CreateCurrencyDto) {
-    return 'This action adds a new currency';
-  }
-
-  async findAll() {
-    return this.prismaService.currency.findMany({select: {
-        id: true,
-        code: true,
-        symbol: true
-      }
+    return this.prismaService.currency.create({
+      data: createCurrencyDto,
+      select: selectConstant.default
     });
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} currency`;
+  async findAll() {
+    return this.prismaService.currency.findMany({
+      select: selectConstant.default
+    });
   }
 
-  async update(id: number, updateCurrencyDto: UpdateCurrencyDto) {
-    return `This action updates a #${id} currency`;
+  async findOne(id: string) {
+    return this.prismaService.currency.findUnique({
+      where: {id},
+      select: selectConstant.default
+    });
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} currency`;
+  async update(id: string, updateCurrencyDto: UpdateCurrencyDto) {
+    return this.prismaService.currency.update({
+      where: {id},
+      data: updateCurrencyDto,
+      select: selectConstant.default
+    });
+  }
+
+  async remove(id: string) {
+    return this.prismaService.currency.delete({
+      where: {id},
+      select: {id: true}
+    });
   }
 }

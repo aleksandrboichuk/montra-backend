@@ -66,7 +66,8 @@ export class AuthService {
 
         const { accessToken, refreshToken } = await this.getTokens({
             id: user.id,
-            email: user.email
+            email: user.email,
+            admin: user.admin
         });
 
         await this.usersService.updateRefreshToken(user.id, refreshToken);
@@ -92,7 +93,8 @@ export class AuthService {
 
         const {accessToken, refreshToken} = await this.getTokens({
             id: user.id,
-            email: user.email
+            email: user.email,
+            admin: user.admin
         });
 
         await this.usersService.updateRefreshToken(userId, refreshToken);
@@ -135,7 +137,8 @@ export class AuthService {
 
         const {accessToken, refreshToken} = await this.getTokens({
             id: user.id,
-            email: user.email
+            email: user.email,
+            admin: user.admin
         });
 
         await this.usersService.setEmailVerified(user.id, refreshToken);

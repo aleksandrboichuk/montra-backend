@@ -11,6 +11,7 @@ import {WalletsModule} from './wallets/wallets.module';
 import {ProtectionMiddleware} from "./middleware/protection.middleware";
 import { CurrenciesModule } from './currencies/currencies.module';
 import { WalletTransactionsModule } from './wallet-transactions/wallet-transactions.module';
+import { TransactionCategoriesModule } from './transaction-categories/transaction-categories.module';
 
 @Module({
   imports: [
@@ -25,15 +26,15 @@ import { WalletTransactionsModule } from './wallet-transactions/wallet-transacti
               },
           },
       }),
-
-      UsersModule,
       PrismaModule,
       AuthModule,
       PasswordsModule,
+      UsersModule,
       MailModule,
       WalletsModule,
       CurrenciesModule,
       WalletTransactionsModule,
+      TransactionCategoriesModule
   ],
   controllers: [],
   providers: [],

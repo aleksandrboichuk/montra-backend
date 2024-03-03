@@ -3,7 +3,7 @@ import {User, Prisma} from "@prisma/client";
 import * as argon2 from 'argon2';
 import {PrismaService} from "../prisma/prisma.service";
 import {RegisterUserDto} from "../auth/dto/register-user.dto";
-import {prismaExclude} from "../prisma/helpers/exclude.helper";
+import {prismaExclude} from "../prisma/utils/exclude.util";
 import {selectConstant} from "./constants/select.constant";
 
 @Injectable()
