@@ -10,7 +10,7 @@ export class LoginUserDto {
     readonly email: string;
 
     @ApiProperty({description: "User Password", example: "123456"})
-    @IsString({message: "Password must be a string"})
+    @IsString()
     @MinLength(validationRulesConstant.password.minLength, {message: errorMessagesConstant.password.minLength})
     @MaxLength(validationRulesConstant.password.maxLength, {message: errorMessagesConstant.password.maxLength})
     readonly password: string;

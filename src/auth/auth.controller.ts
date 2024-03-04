@@ -6,13 +6,16 @@ import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
-    ApiTags
+    ApiTags, PickType
 } from "@nestjs/swagger";
 import {LocalAuthGuard} from "./guards/local-auth.guard";
 import {JwtRefreshGuard} from "./guards/jwt-refresh.guard";
 import {VerifyUserDto} from "./dto/verify-user.dto";
 import {EmailVerificationCodeDto} from "./dto/email-verification-code.dto";
 import {endpointsDoc} from "./docs/endpoints.doc";
+import {AuthTokensDto} from "./dto/auth-tokens.dto";
+import {UserDto} from "../users/dto/user.dto";
+import {BEARER_AUTH_NAME} from "../environments/environments";
 
 @ApiTags("Authorization")
 @Controller('auth')
@@ -21,45 +24,44 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @ApiOperation({description: "Register user"})
-    @ApiOkResponse(endpointsDoc.register.responses.ok)
+    @ApiOkResponse({type: PickType(UserDto,["id"])})
     @ApiBadRequestResponse(endpointsDoc.register.responses.badRequest)
     @ApiBody(endpointsDoc.register.body)
     @Post("/register")
-    async register(@Body() dto: RegisterUserDto): Promise<{data: object}>
-    {
+    async register(@Body() dto: RegisterUserDto): Promise<{data: Pick<UserDto,"id">}> {
         return {
             data: await this.authService.register(dto)
         };
     }
 
     @ApiOperation({description: "Login User"})
-    @ApiOkResponse(endpointsDoc.login.responses.ok)
+    @ApiOkResponse({type: AuthTokensDto})
     @ApiBadRequestResponse(endpointsDoc.login.responses.badRequest)
     @ApiBody(endpointsDoc.login.body)
     @UseGuards(LocalAuthGuard)
     @Post("/login")
-    async login(@Request() req): Promise<{accessToken: string, refreshToken: string}>
+    async login(@Request() req): Promise<AuthTokensDto>
     {
         return this.authService.login(req.user);
     }
 
     @ApiOperation({description: "Refresh bearer token"})
-    @ApiOkResponse(endpointsDoc.refreshToken.responses.ok)
+    @ApiOkResponse({type: AuthTokensDto})
     @ApiBadRequestResponse(endpointsDoc.refreshToken.responses.badRequest)
-    @ApiBearerAuth("Authorization")
+    @ApiBearerAuth(BEARER_AUTH_NAME)
     @UseGuards(JwtRefreshGuard)
     @Post("/refresh")
-    async refreshToken(@Request() req): Promise<{accessToken: string, refreshToken: string}>
+    async refreshToken(@Request() req): Promise<AuthTokensDto>
     {
         return this.authService.refreshToken(req.user.id, req.user.refreshToken);
     }
 
     @ApiOperation({description: "User email verification"})
-    @ApiOkResponse(endpointsDoc.verifyEmail.responses.ok)
+    @ApiOkResponse({type: AuthTokensDto})
     @ApiBadRequestResponse(endpointsDoc.verifyEmail.responses.badRequest)
     @ApiBody(endpointsDoc.verifyEmail.body)
     @Post("/verification/email/verify")
-    async verifyEmail(@Body() dto: VerifyUserDto): Promise<{accessToken: string, refreshToken: string}>
+    async verifyEmail(@Body() dto: VerifyUserDto): Promise<AuthTokensDto>
     {
         return await this.authService.verifyUser(dto);
     }

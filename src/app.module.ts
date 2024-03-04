@@ -1,13 +1,17 @@
-import { Module } from '@nestjs/common';
-import {ConfigModule} from "@nestjs/config";
-import { UserModule } from './user/user.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { AuthModule } from './auth/auth.module';
-import { PasswordModule } from './password/password.module';
-import { MailModule } from './mail/mail.module';
+import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
+import {UsersModule} from './users/users.module';
+import {PrismaModule} from './prisma/prisma.module';
+import {AuthModule} from './auth/auth.module';
+import {PasswordsModule} from './passwords/passwords.module';
+import {MailModule} from './mail/mail.module';
 import {MailerModule} from "@nestjs-modules/mailer";
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import {GMAIL_MAIL_PASSWORD, GMAIL_MAIL_USERNAME} from "./environments/environments";
+import {WalletsModule} from './wallets/wallets.module';
+import {ProtectionMiddleware} from "./middleware/protection.middleware";
+import { CurrenciesModule } from './currencies/currencies.module';
+import { WalletTransactionsModule } from './wallet-transactions/wallet-transactions.module';
+import { TransactionCategoriesModule } from './transaction-categories/transaction-categories.module';
 
 @Module({
   imports: [
@@ -22,15 +26,24 @@ import {GMAIL_MAIL_PASSWORD, GMAIL_MAIL_USERNAME} from "./environments/environme
               },
           },
       }),
-
-      UserModule,
       PrismaModule,
       AuthModule,
-      PasswordModule,
+      PasswordsModule,
+      UsersModule,
       MailModule,
-
+      WalletsModule,
+      CurrenciesModule,
+      WalletTransactionsModule,
+      TransactionCategoriesModule
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+
+export class AppModule implements NestModule{
+    configure(consumer: MiddlewareConsumer): any {
+        consumer
+            .apply(ProtectionMiddleware)
+            .forRoutes({path: "*", method: RequestMethod.ALL})
+    }
+}

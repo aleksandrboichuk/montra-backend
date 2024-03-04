@@ -42,8 +42,8 @@ model User {
 
   // relations
   password_resets         PasswordResets[]
-  wallets                 Wallets[]
-  transaction_categories  TransactionCategories[]
+  wallets                 Wallet[]
+  transaction_categories  TransactionCategory[]
 
   @@map("users")
 }
@@ -62,24 +62,25 @@ model PasswordResets {
   @@map("password_resets")
 }
 
-model Wallets {
+model Wallet {
   id                      String            @default(uuid()) @id
   user_id                 String
-  name                    String
+  name                    String            @default("Default Wallet")
   balance                 Float             @default(0.0)
   active                  Boolean           @default(true)
-  currency                CurrencyCodes     @default(USD)
+  currency_id             String
   created_at              DateTime          @default(now())
   updated_at              DateTime          @updatedAt
 
   // relations
   user                    User              @relation(fields: [user_id], references: [id])
-  transactions            WalletTransacions[]
+  currency                Currency          @relation(fields: [currency_id], references: [id])
+  transactions            WalletTransaction[]
 
   @@map("wallets")
 }
 
-model WalletTransacions {
+model WalletTransaction {
   id                      String            @default(uuid()) @id
   wallet_id               String
   amount                  Float
@@ -92,13 +93,13 @@ model WalletTransacions {
   updated_at              DateTime          @updatedAt
 
   // relations
-  wallet                  Wallets                @relation(fields: [wallet_id], references: [id])
-  category                TransactionCategories  @relation(fields: [category_id], references: [id])
+  wallet                  Wallet               @relation(fields: [wallet_id], references: [id])
+  category                TransactionCategory  @relation(fields: [category_id], references: [id])
 
   @@map("wallet_transactions")
 }
 
-model TransactionCategories {
+model TransactionCategory {
   id                      String            @default(uuid()) @id
   name                    String
   main                    Boolean           @default(false)
@@ -108,142 +109,33 @@ model TransactionCategories {
   updated_at              DateTime          @updatedAt
 
   // relations
-  transactions            WalletTransacions[]
+  transactions            WalletTransaction[]
   user                    User?             @relation(fields: [created_by], references: [id])
 
   @@map("transaction_categories")
 }
 
+model Currency {
+  id                      String            @default(uuid()) @id
+  name                    String            @db.VarChar(50)
+  symbol                  String            @db.VarChar(10)
+  code                    String            @db.VarChar(3)
+
+  // relations
+  wallets                 Wallet[]
+
+  @@map("currencies")
+}
+
 enum SocialNetwork {
-  google
-  twitter
-  facebook
+  GOOGLE
+  TWITTER
+  FACEBOOK
+  APPLE
 }
 
 enum TransactionTypes {
-  expense
-  income
-  transfer
-}
-
-enum CurrencyCodes {
-  USD
-  CAD
-  EUR
-  AED
-  AFN
-  ALL
-  AMD
-  ARS
-  AUD
-  AZN
-  BAM
-  BDT
-  BGN
-  BHD
-  BIF
-  BND
-  BOB
-  BRL
-  BWP
-  BYN
-  BZD
-  CDF
-  CHF
-  CLP
-  CNY
-  COP
-  CRC
-  CVE
-  CZK
-  DJF
-  DKK
-  DOP
-  DZD
-  EEK
-  EGP
-  ERN
-  ETB
-  GBP
-  GEL
-  GHS
-  GNF
-  GTQ
-  HKD
-  HNL
-  HRK
-  HUF
-  IDR
-  ILS
-  INR
-  IQD
-  IRR
-  ISK
-  JMD
-  JOD
-  JPY
-  KES
-  KHR
-  KMF
-  KRW
-  KWD
-  KZT
-  LBP
-  LKR
-  LTL
-  LVL
-  LYD
-  MAD
-  MDL
-  MGA
-  MKD
-  MMK
-  MOP
-  MUR
-  MXN
-  MYR
-  MZN
-  NAD
-  NGN
-  NIO
-  NOK
-  NPR
-  NZD
-  OMR
-  PAB
-  PEN
-  PHP
-  PKR
-  PLN
-  PYG
-  QAR
-  RON
-  RSD
-  RUB
-  RWF
-  SAR
-  SDG
-  SEK
-  SGD
-  SOS
-  SYP
-  THB
-  TND
-  TOP
-  TRY
-  TTD
-  TWD
-  TZS
-  UAH
-  UGX
-  UYU
-  UZS
-  VEF
-  VND
-  XAF
-  XOF
-  YER
-  ZAR
-  ZMK
-  ZWL
+  EXPENSE
+  INCOME
+  TRANSFER
 }

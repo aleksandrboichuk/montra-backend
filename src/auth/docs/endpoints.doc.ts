@@ -26,23 +26,13 @@ export const endpointsDoc = {
                 properties: {
                     name: {description: "User name", example: "John"},
                     email: {description: "User email", example: "test@montra.com"},
-                    password: {description: "User password", example: "12345qwerty"},
+                    password: {description: "User passwords", example: "12345qwerty"},
                 },
             },
         }
     },
     login: {
         responses: {
-            ok: {
-                schema: {
-                    type: 'object',
-                    properties: {
-                        accessToken: {description: "Access bearer token", type: "string"},
-                        refreshToken: {description: "Refresh bearer token", type: "string"}
-                    },
-                },
-                description: "User successfully logged in"
-            },
             badRequest: {
                 schema: {
                     type: 'object',
@@ -64,15 +54,6 @@ export const endpointsDoc = {
     },
     refreshToken: {
         responses: {
-            ok: {
-                schema: {
-                    type: 'object',
-                    properties: {
-                        accessToken: {description: "Access bearer token", type: "string"},
-                        refreshToken: {description: "Refresh bearer token", type: "string"}
-                    },
-                }, description: "Token successfully refreshed"
-            },
             badRequest: {
                 schema: {
                     type: 'object',
@@ -85,22 +66,13 @@ export const endpointsDoc = {
     },
     verifyEmail: {
         responses: {
-            ok: {
-                schema: {
-                    type: 'object',
-                    properties: {
-                        accessToken: {description: "Access bearer token", type: "string"},
-                        refreshToken: {description: "Refresh bearer token", type: "string"}
-                    },
-                }, description: "Email successfully verified and logged in"
-            },
             badRequest: {
                 schema: {
                     type: 'object',
                     properties: {
                         message: {description: "Verification code error message", type: "object"},
                     },
-                }, description: "Verification code errorMessages"
+                }
             }
         },
         body: {
