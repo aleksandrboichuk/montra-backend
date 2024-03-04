@@ -7,6 +7,9 @@ import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
 @Module({
   providers: [TransactionCategoriesService, JwtAuthGuard],
   controllers: [TransactionCategoriesController],
-  imports: [PrismaModule]
+  imports: [PrismaModule],
+  exports: [
+      TransactionCategoriesService
+  ]
 })
 export class TransactionCategoriesModule {}

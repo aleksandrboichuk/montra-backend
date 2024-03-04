@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, UnprocessableEntityException} from '@nestjs/common';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
 import {PrismaService} from "../prisma/prisma.service";
 import {selectConstant} from "./constants/select.constant";
+import {Prisma} from "@prisma/client";
 
 @Injectable()
 export class CurrenciesService{
@@ -22,10 +23,10 @@ export class CurrenciesService{
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, select?: Prisma.CurrencySelect) {
     return this.prismaService.currency.findUnique({
       where: {id},
-      select: selectConstant.default
+      select: select ?? selectConstant.default
     });
   }
 
@@ -42,5 +43,18 @@ export class CurrenciesService{
       where: {id},
       select: {id: true}
     });
+  }
+
+  async exists(id: string, throwException: boolean = false){
+    const item: boolean = !! await this.findOne(id, {id: true})
+
+    if(!item){
+      if(throwException){
+        throw new UnprocessableEntityException('Currency not found')
+      }
+      return false
+    }
+
+    return true;
   }
 }

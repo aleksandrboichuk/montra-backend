@@ -8,6 +8,7 @@ import {AdminGuard} from "../auth/guards/admin.guard";
 @Module({
   controllers: [CurrenciesController],
   providers: [CurrenciesService, JwtAuthGuard, AdminGuard],
-  imports: [PrismaModule]
+  imports: [PrismaModule],
+  exports: [CurrenciesService]
 })
 export class CurrenciesModule {}

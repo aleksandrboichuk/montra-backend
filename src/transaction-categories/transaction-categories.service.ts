@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, UnprocessableEntityException} from '@nestjs/common';
 import {PrismaService} from "../prisma/prisma.service";
 import {UserPayloadDto} from "../auth/dto/user-payload.dto";
 import {selectConstant} from "./constants/select.constant";
@@ -53,8 +53,14 @@ export class TransactionCategoriesService {
     }
 
     async findOne(id: string, user: UserPayloadDto){
-        return this.prismaService.transactionCategory.delete({
-            where: {id},
+        return this.prismaService.transactionCategory.findUnique({
+            where: {
+                id,
+                OR: [
+                    {created_by: user.id},
+                    {main: true},
+                ]
+            },
             select: selectConstant.default
         });
     }
@@ -75,5 +81,22 @@ export class TransactionCategoriesService {
                 id: true
             }
         });
+    }
+
+    async exists(id: string, throwException: boolean = false){
+
+        const item: boolean = !! await this.prismaService.transactionCategory.findUnique({
+            where: {id},
+            select: {id: true}
+        });
+
+        if(!item){
+            if(throwException){
+                throw new UnprocessableEntityException('Transaction category not found')
+            }
+            return false
+        }
+
+        return true;
     }
 }
