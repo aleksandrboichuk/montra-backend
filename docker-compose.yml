@@ -7,7 +7,7 @@ networks:
 services:
 
 #### NODE
-  app:
+  node:
     build:
       context: .
     ports:
