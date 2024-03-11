@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  build:
+  git_pull:
     runs-on: ubuntu-latest
     steps:
       - name: Git Pull & Prepare files
@@ -17,10 +17,13 @@ jobs:
             git reset --hard origin/main
             git pull
             cp .env.prod .env
-          host: 138.197.110.113
-          user: root
-          pass: !Sasha753951B
-          port: 22
+          host: "138.197.110.113"
+          user: "root"
+          pass: "!Sasha753951B"
+          port: "22"
+  building:
+    runs-on: ubuntu-latest
+    steps:
       - name: Building
         uses: fifsky/ssh-action@master
         with:
@@ -28,7 +31,8 @@ jobs:
             cd /home/montra-backend
             docker-compose build
             docker-compose up -d
-          host: 138.197.110.113
-          user: root
-          pass: !Sasha753951B
-          port: 22
+          host: "138.197.110.113"
+          user: "root"
+          pass: "!Sasha753951B"
+          port: "22"
+
