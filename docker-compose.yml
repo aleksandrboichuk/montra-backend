@@ -7,7 +7,7 @@ networks:
 services:
 
 #### NODE
-  node:
+  app:
     build:
       context: .
     ports:
@@ -35,7 +35,7 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./nginx/ssl/:/etc/nginx/ssl
     depends_on:
-      - node
+      - app
     networks:
       - app-network
 
@@ -55,16 +55,16 @@ services:
     networks:
       - app-network
 
-### PG ADMIN
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
-    ports:
-      - '5050:80'
-    depends_on:
-      - postgresql
-    networks:
-      - app-network
+#### PG ADMIN
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    restart: always
+#    environment:
+#      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+#      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+#    ports:
+#      - '5050:80'
+#    depends_on:
+#      - postgresql
+#    networks:
+#      - app-network

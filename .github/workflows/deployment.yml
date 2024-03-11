@@ -1,0 +1,34 @@
+name: Deployment
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Pull & Prepare files
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /home/montra-backend
+            git fetch --all
+            git reset --hard origin/main
+            git pull
+            cp .env.prod .env
+          host: 138.197.110.113
+          user: root
+          pass: !Sasha753951B
+          port: 22
+      - name: Building
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /home/montra-backend
+            docker-compose build
+            docker-compose up -d
+          host: 138.197.110.113
+          user: root
+          pass: !Sasha753951B
+          port: 22

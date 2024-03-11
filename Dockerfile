@@ -1,21 +1,25 @@
-# Use the official Node.js image as the base image
-# You can use any version that fits your usecase
-FROM node:18
+# Base image
+FROM node:21-alpine
 
-# Set the working directory inside the container
+# Create app directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files into the container
-COPY ./package*.json ./
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
 
-# Install the dependencies for the application
+# Bundle app source
+COPY . .
+
+RUN npx prisma generate
+
+# Install app dependencies
 RUN npm install
 
-# Copy the rest of the application code into the container
-COPY ./ ./
+# Creates a "dist" folder with the production build
+RUN npm run build
 
-# Expose the port that the application listens on
-EXPOSE 3000
+# Pruning dev dependencies
+RUN npm prune --production
 
-# Start the application
-CMD [ "npm", "run", "start" ]
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]
