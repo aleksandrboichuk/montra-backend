@@ -32,7 +32,7 @@ services:
       - "80"
       - "443"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/default.conf:/etc/nginx/conf.d
       - ./nginx/ssl/:/etc/nginx/ssl
       - ./nginx/auth/:/etc/nginx
     depends_on:
