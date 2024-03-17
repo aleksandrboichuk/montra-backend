@@ -36,7 +36,7 @@ services:
       - ./nginx/ssl/:/etc/nginx/ssl
       - ./nginx/auth/:/etc/nginx
     depends_on:
-      - app
+      - node
     networks:
       - app-network
 
