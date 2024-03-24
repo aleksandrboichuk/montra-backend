@@ -1,12 +1,14 @@
 import {Body, Controller, Get, Param, Post} from '@nestjs/common';
-import {ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiTags} from "@nestjs/swagger";
+import {ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiSecurity, ApiTags} from "@nestjs/swagger";
 import {ForgotPasswordDto} from "./dto/forgot-password.dto";
 import {PasswordsService} from "./passwords.service";
 import {ResetPasswordDto} from "./dto/reset-password.dto";
 import {endpointsDoc} from "./docs/endpoints.doc";
+import {API_KEY_HEADER_NAME} from "../environments/environments";
 
 @ApiTags("User Passwords Operation")
 @Controller('/auth/passwords')
+@ApiSecurity(API_KEY_HEADER_NAME)
 export class PasswordsController {
 
     constructor(

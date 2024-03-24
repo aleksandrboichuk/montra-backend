@@ -1,5 +1,5 @@
 import {Body, Controller, Delete, Get, NotFoundException, Param, Post, Put} from '@nestjs/common';
-import {ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiOkResponse, ApiOperation, ApiSecurity, ApiTags} from "@nestjs/swagger";
 import {TransactionCategoriesService} from "./transaction-categories.service";
 import {CurrentUser} from "../decorators/current-user.decorator";
 import {UserPayloadDto} from "../auth/dto/user-payload.dto";
@@ -7,10 +7,11 @@ import {endpointsDoc} from "../common/docs/endpoints.doc";
 import {CreateTransactionCategoryDto} from "./dto/create-transaction-category.dto";
 import {UpdateTransactionCategoryDto} from "./dto/update-transaction-category.dto";
 import {TransactionCategoryDto} from "./dto/transaction-category.dto";
-import {BEARER_AUTH_NAME} from "../environments/environments";
+import {API_KEY_HEADER_NAME, BEARER_AUTH_NAME} from "../environments/environments";
 
 @ApiTags("Transaction Categories")
 @ApiBearerAuth(BEARER_AUTH_NAME)
+@ApiSecurity(API_KEY_HEADER_NAME)
 @Controller('transaction-categories')
 export class TransactionCategoriesController {
     constructor(private transactionCategoriesService: TransactionCategoriesService) {}

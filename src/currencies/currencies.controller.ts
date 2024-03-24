@@ -2,15 +2,16 @@ import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, NotFoundEx
 import { CurrenciesService } from './currencies.service';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
-import {ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiOkResponse, ApiOperation, ApiSecurity, ApiTags} from "@nestjs/swagger";
 import {CurrencyDto} from "./dto/currency.dto";
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
 import {AdminGuard} from "../auth/guards/admin.guard";
 import {endpointsDoc} from "../common/docs/endpoints.doc";
-import {BEARER_AUTH_NAME} from "../environments/environments";
+import {API_KEY_HEADER_NAME, BEARER_AUTH_NAME} from "../environments/environments";
 
 @ApiTags("Currencies")
 @Controller('currencies')
+@ApiSecurity(API_KEY_HEADER_NAME)
 export class CurrenciesController {
   constructor(private readonly currenciesService: CurrenciesService) {}
 

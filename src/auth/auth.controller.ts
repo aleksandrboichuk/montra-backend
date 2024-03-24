@@ -5,7 +5,7 @@ import {
     ApiBadRequestResponse, ApiBearerAuth,
     ApiBody,
     ApiOkResponse,
-    ApiOperation,
+    ApiOperation, ApiSecurity,
     ApiTags, PickType
 } from "@nestjs/swagger";
 import {LocalAuthGuard} from "./guards/local-auth.guard";
@@ -15,9 +15,10 @@ import {EmailVerificationCodeDto} from "./dto/email-verification-code.dto";
 import {endpointsDoc} from "./docs/endpoints.doc";
 import {AuthTokensDto} from "./dto/auth-tokens.dto";
 import {UserDto} from "../users/dto/user.dto";
-import {BEARER_AUTH_NAME} from "../environments/environments";
+import {API_KEY_HEADER_NAME, BEARER_AUTH_NAME} from "../environments/environments";
 
 @ApiTags("Authorization")
+@ApiSecurity(API_KEY_HEADER_NAME)
 @Controller('auth')
 export class AuthController {
 

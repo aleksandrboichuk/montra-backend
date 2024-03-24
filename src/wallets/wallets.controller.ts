@@ -8,17 +8,18 @@ import {UpdateWalletDto} from "./dto/update-wallet.dto";
 import {
     ApiBearerAuth,
     ApiOkResponse,
-    ApiOperation,
+    ApiOperation, ApiSecurity,
     ApiTags,
     ApiUnauthorizedResponse
 } from "@nestjs/swagger";
 import {endpointsDoc} from "../common/docs/endpoints.doc";
 import {WalletDto} from "./dto/wallet.dto";
-import {BEARER_AUTH_NAME} from "../environments/environments";
+import {API_KEY_HEADER_NAME, BEARER_AUTH_NAME} from "../environments/environments";
 
+@Controller('wallets')
 @ApiTags("User wallets")
 @ApiBearerAuth(BEARER_AUTH_NAME)
-@Controller('wallets')
+@ApiSecurity(API_KEY_HEADER_NAME)
 @UseGuards(JwtAuthGuard)
 @ApiUnauthorizedResponse(endpointsDoc.responses.unauthorized)
 export class WalletsController {

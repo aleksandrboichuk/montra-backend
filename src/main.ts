@@ -25,7 +25,6 @@ async function bootstrap() {
       .setTitle('Montra API')
       .setDescription('The Montra API description')
       .setVersion('1.0')
-      .addSecurityRequirements(API_KEY_HEADER_NAME)
       .addApiKey({
         type: 'apiKey',
         name: API_KEY_HEADER_NAME,

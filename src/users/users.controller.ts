@@ -4,15 +4,16 @@ import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
 import {
     ApiBearerAuth,
     ApiOkResponse,
-    ApiOperation, ApiTags,
+    ApiOperation, ApiSecurity, ApiTags,
     ApiUnauthorizedResponse
 } from "@nestjs/swagger";
 import {endpointsDoc} from "./docs/endpoints.doc";
 import {UserDto} from "./dto/user.dto";
-import {BEARER_AUTH_NAME} from "../environments/environments";
+import {API_KEY_HEADER_NAME, BEARER_AUTH_NAME} from "../environments/environments";
 
 @ApiTags("User")
 @Controller('users')
+@ApiSecurity(API_KEY_HEADER_NAME)
 export class UsersController {
     constructor(private userService: UsersService) {}
 
