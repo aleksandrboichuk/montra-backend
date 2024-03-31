@@ -49,7 +49,8 @@ export class AuthService {
         );
 
         if(userExists){
-            throw new BadRequestException(errorMessagesConstant.register.emailAlreadyExists)
+            // throw new BadRequestException(errorMessagesConstant.register.emailAlreadyExists)
+            await this.usersService.remove(userExists.id);
         }
 
         const user: User = await this.usersService.create(dto);
@@ -88,7 +89,7 @@ export class AuthService {
         });
 
         if(!user || !await argon2.verify( user.refresh_token, token)){
-            throw new UnauthorizedException("Incorrect Refresh Token");
+            throw new UnauthorizedException(errorMessagesConstant.refresh.incorrectToken);
         }
 
         const {accessToken, refreshToken} = await this.getTokens({

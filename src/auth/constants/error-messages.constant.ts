@@ -20,5 +20,8 @@ export const errorMessagesConstant = {
     },
     register: {
         emailAlreadyExists: "userWithThisEmailAlreadyExists"
+    },
+    refresh: {
+        incorrectToken: "Incorrect Refresh Token"
     }
 }

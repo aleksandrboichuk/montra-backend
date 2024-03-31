@@ -41,9 +41,11 @@ export class AuthController {
     @ApiBody(endpointsDoc.login.body)
     @UseGuards(LocalAuthGuard)
     @Post("/login")
-    async login(@Request() req): Promise<AuthTokensDto>
+    async login(@Request() req): Promise<{data: AuthTokensDto}>
     {
-        return this.authService.login(req.user);
+        return {
+            data: await this.authService.login(req.user)
+        };
     }
 
     @ApiOperation({description: "Refresh bearer token"})
@@ -52,9 +54,11 @@ export class AuthController {
     @ApiBearerAuth(BEARER_AUTH_NAME)
     @UseGuards(JwtRefreshGuard)
     @Post("/refresh")
-    async refreshToken(@Request() req): Promise<AuthTokensDto>
+    async refreshToken(@Request() req): Promise<{data: AuthTokensDto}>
     {
-        return this.authService.refreshToken(req.user.id, req.user.refreshToken);
+        return {
+            data: await this.authService.refreshToken(req.user.id, req.user.refreshToken)
+        };
     }
 
     @ApiOperation({description: "User email verification"})
@@ -62,9 +66,11 @@ export class AuthController {
     @ApiBadRequestResponse(endpointsDoc.verifyEmail.responses.badRequest)
     @ApiBody(endpointsDoc.verifyEmail.body)
     @Post("/verification/email/verify")
-    async verifyEmail(@Body() dto: VerifyUserDto): Promise<AuthTokensDto>
+    async verifyEmail(@Body() dto: VerifyUserDto): Promise<{data: AuthTokensDto}>
     {
-        return await this.authService.verifyUser(dto);
+        return {
+            data: await this.authService.verifyUser(dto)
+        };
     }
 
     @ApiOperation({description: "User email verification"})

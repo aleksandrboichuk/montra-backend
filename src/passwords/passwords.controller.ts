@@ -29,9 +29,11 @@ export class PasswordsController {
     @ApiOkResponse(endpointsDoc.validateCode.responses.ok)
     @ApiBadRequestResponse(endpointsDoc.validateCode.responses.badRequest)
     @Get("/reset/validate/:code")
-    async validateCode(@Param("code") code : string): Promise<{userId: string}> {
+    async validateCode(@Param("code") code : string): Promise<{data: {userId: string}}> {
         return {
-            userId: await this.passwordService.getUserIdByCode(code)
+            data: {
+                userId: await this.passwordService.getUserIdByCode(code)
+            }
         };
     }
 
