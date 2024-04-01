@@ -16,6 +16,7 @@ import {endpointsDoc} from "./docs/endpoints.doc";
 import {AuthTokensDto} from "./dto/auth-tokens.dto";
 import {UserDto} from "../users/dto/user.dto";
 import {API_KEY_HEADER_NAME, BEARER_AUTH_NAME} from "../environments/environments";
+import {LoginUserDto} from "./dto/login-user.dto";
 
 @ApiTags("Authorization")
 @ApiSecurity(API_KEY_HEADER_NAME)
@@ -41,10 +42,9 @@ export class AuthController {
     @ApiBody(endpointsDoc.login.body)
     @UseGuards(LocalAuthGuard)
     @Post("/login")
-    async login(@Request() req): Promise<{data: AuthTokensDto}>
-    {
+    async login(@Body() dto: LoginUserDto): Promise<{data: AuthTokensDto}> {
         return {
-            data: await this.authService.login(req.user)
+            data: await this.authService.login(dto)
         };
     }
 
