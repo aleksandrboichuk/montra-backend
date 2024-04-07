@@ -1,12 +1,4 @@
-export const errorMessagesConstant = {
-    name: {
-        minLength: "nameMinValue",
-        maxLength: "nameMaxValue"
-    },
-    password: {
-        minLength: "passwordMinLength",
-        maxLength: "passwordMaxLength"
-    },
+export const errorKeysConstant = {
     email: {
         alreadyExists: "userWithThisEmailAlreadyExists",
         format: "emailInvalid"
@@ -22,6 +14,6 @@ export const errorMessagesConstant = {
         emailAlreadyExists: "userWithThisEmailAlreadyExists"
     },
     refresh: {
-        incorrectToken: "Incorrect Refresh Token"
+        incorrectToken: "refreshTokenIsIncorrect"
     }
 }

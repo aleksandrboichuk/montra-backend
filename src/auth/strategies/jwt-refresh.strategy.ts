@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {Request} from "express";
 import {JWT_REFRESH_SECRET} from "../../environments/environments";
-import {errorMessagesConstant} from "../constants/error-messages.constant";
+import {errorKeysConstant} from "../constants/error-keys.constant";
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -21,7 +21,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
         const refreshToken: string = request.get('authorization').replace('Bearer', '').trim();
 
         if(!refreshToken){
-            throw new UnauthorizedException(errorMessagesConstant.refresh.incorrectToken);
+            throw new UnauthorizedException(errorKeysConstant.refresh.incorrectToken);
         }
 
         return { ...payload , refreshToken};

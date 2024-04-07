@@ -7,7 +7,7 @@ import {LoginUserDto} from "./dto/login-user.dto";
 import {MailService} from "../mail/mail.service";
 import {VerifyUserDto} from "./dto/verify-user.dto";
 import {Prisma, User} from "@prisma/client";
-import {errorMessagesConstant} from "./constants/error-messages.constant";
+import {errorKeysConstant} from "./constants/error-keys.constant";
 import {JWT_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_SECRET} from "../environments/environments";
 import {UserPayloadDto} from "./dto/user-payload.dto";
 import {AuthTokensDto} from "./dto/auth-tokens.dto";
@@ -49,7 +49,7 @@ export class AuthService {
         );
 
         if(userExists){
-            // throw new BadRequestException(errorMessagesConstant.register.emailAlreadyExists)
+            // throw new BadRequestException(errorKeysConstant.register.emailAlreadyExists)
             await this.usersService.remove(userExists.id);
         }
 
@@ -89,7 +89,7 @@ export class AuthService {
         });
 
         if(!user || !await argon2.verify( user.refresh_token, token)){
-            throw new UnauthorizedException(errorMessagesConstant.refresh.incorrectToken);
+            throw new UnauthorizedException(errorKeysConstant.refresh.incorrectToken);
         }
 
         const {accessToken, refreshToken} = await this.getTokens({
@@ -133,7 +133,7 @@ export class AuthService {
         const user: Prisma.UserGetPayload<any> = await this.usersService.getUserByEmailVerificationCode(dto.code);
 
         if(!user){
-            throw new BadRequestException(errorMessagesConstant.code.incorrect)
+            throw new BadRequestException(errorKeysConstant.code.incorrect)
         }
 
         const {accessToken, refreshToken} = await this.getTokens({

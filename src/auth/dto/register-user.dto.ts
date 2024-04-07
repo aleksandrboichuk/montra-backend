@@ -1,23 +1,33 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsEmail, IsString, Length, Matches, MaxLength, MinLength} from "class-validator";
 import {validationRulesConstant} from "../constants/validation-rules.constant";
-import {errorMessagesConstant} from "../constants/error-messages.constant";
+import {isStringKey, matchFormatKey, maxLengthKey, minLengthKey} from "../../common/utils/error-key-generator.util";
 
 export class RegisterUserDto {
 
     @ApiProperty({description: "User Name", example: "John"})
-    @IsString({message: "User Name must be a string"})
-    @MinLength(validationRulesConstant.name.minLength, {message: errorMessagesConstant.name.minLength})
-    @MaxLength(validationRulesConstant.name.maxLength, {message: errorMessagesConstant.name.maxLength})
+    @IsString({message: isStringKey('name')})
+    @MinLength(
+        validationRulesConstant.name.minLength, {
+            message: minLengthKey('name')
+        })
+    @MaxLength(validationRulesConstant.name.maxLength, {
+        message: maxLengthKey('name')
+    })
     readonly name: string
 
     @ApiProperty({description: "User Email", example: "test@montra.com"})
-    @IsEmail({},{message: errorMessagesConstant.email.format})
+    @IsEmail({},{message: matchFormatKey('email')})
     readonly email: string
 
     @ApiProperty({description: "User Password", example: "123456"})
-    @IsString({message: "Password must be a string"})
-    @MinLength(validationRulesConstant.password.minLength, {message: errorMessagesConstant.password.minLength})
-    @MaxLength(validationRulesConstant.password.maxLength, {message: errorMessagesConstant.password.maxLength})
+    @IsString({message: isStringKey('password')})
+    @MinLength(
+        validationRulesConstant.password.minLength, {
+            message: minLengthKey('password')
+        })
+    @MaxLength(validationRulesConstant.password.maxLength, {
+        message: maxLengthKey('password')
+    })
     readonly password: string
 }

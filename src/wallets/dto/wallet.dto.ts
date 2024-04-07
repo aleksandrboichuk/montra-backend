@@ -2,8 +2,7 @@ import {ApiProperty} from "@nestjs/swagger";
 import {IsNumber, IsString, MaxLength, MinLength} from "class-validator";
 import {CurrencyDto} from "../../currencies/dto/currency.dto";
 import {validationRulesConstant} from "../constants/validation-rules.constant";
-import {WalletTransactionDto} from "../../wallet-transactions/dto/wallet-transaction.dto";
-import {forwardRef} from "@nestjs/common";
+import {isNumberKey, isStringKey, maxLengthKey, minLengthKey} from "../../common/utils/error-key-generator.util";
 
 export class WalletDto {
 
@@ -20,16 +19,22 @@ export class WalletDto {
     @ApiProperty({
         example: "My wallet"
     })
-    @MinLength(validationRulesConstant.name.minLength)
-    @MaxLength(validationRulesConstant.name.maxLength)
-    @IsString()
+    @MinLength(validationRulesConstant.name.minLength, {
+        message: minLengthKey('name')
+    })
+    @MaxLength(validationRulesConstant.name.maxLength, {
+        message: maxLengthKey('name')
+    })
+    @IsString({message: isStringKey('name')})
     readonly name: string
 
     @ApiProperty({
         example: 255.12,
         required: true
     })
-    @IsNumber()
+    @IsNumber({}, {
+        message: isNumberKey('balance')
+    })
     readonly balance: number
 
     @ApiProperty({
@@ -41,7 +46,7 @@ export class WalletDto {
         example: "1a2b3c-1a2b3c-1a2b3c-1a2b3c-1a2b3c",
         required: true
     })
-    @IsString()
+    @IsString({message: isStringKey('currency_id')})
     readonly currency_id: string
 
     @ApiProperty()

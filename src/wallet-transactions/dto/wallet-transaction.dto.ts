@@ -2,6 +2,8 @@ import {WalletDto} from "../../wallets/dto/wallet.dto";
 import {ApiProperty} from "@nestjs/swagger";
 import {$Enums} from ".prisma/client";
 import {IsNumber, IsString, MaxLength, MinLength} from "class-validator";
+import {isNumberKey, isStringKey, maxLengthKey, minLengthKey} from "../../common/utils/error-key-generator.util";
+import {validationRulesConstant} from "../constants/validation-rules.constant";
 
 export class WalletTransactionDto {
 
@@ -19,16 +21,22 @@ export class WalletTransactionDto {
         example: 253.21,
         required: true
     })
-    @IsNumber()
+    @IsNumber({}, {
+        message: isNumberKey('amount')
+    })
     readonly amount: number;
 
     @ApiProperty({
         example: "Bought products",
         required: true
     })
-    @IsString()
-    @MinLength(2)
-    @MaxLength(2048)
+    @IsString({message: isStringKey('description')})
+    @MinLength(validationRulesConstant.description.minLength, {
+        message: minLengthKey('description')
+    })
+    @MinLength(validationRulesConstant.description.maxLength, {
+        message: maxLengthKey('description')
+    })
     readonly description: string;
 
     @ApiProperty({
@@ -36,7 +44,7 @@ export class WalletTransactionDto {
         required: true,
         enum: $Enums.TransactionTypes
     })
-    @IsString()
+    @IsString({message: isStringKey('type')})
     readonly type: $Enums.TransactionTypes;
 
     @ApiProperty({

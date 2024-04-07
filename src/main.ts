@@ -17,7 +17,13 @@ async function bootstrap() {
 
   // validation
   app.useGlobalPipes(new ValidationPipe({
-    exceptionFactory: (errors) => new BadRequestException(errors)
+    exceptionFactory: (errors) => {
+        const messages = errors.map((error) => Object.values(error.constraints));
+        return new BadRequestException({
+            message: "Validation Errors",
+            errors: messages.flat()
+        });
+    }
   }));
 
   // swagger

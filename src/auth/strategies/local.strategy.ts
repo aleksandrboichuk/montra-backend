@@ -2,7 +2,7 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
-import {errorMessagesConstant} from "../constants/error-messages.constant";
+import {errorKeysConstant} from "../constants/error-keys.constant";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -18,11 +18,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         const user = await this.authService.validateUser(email, password);
 
         if (!user) {
-            throw new UnauthorizedException(errorMessagesConstant.login.incorrectCredentials);
+            throw new UnauthorizedException(errorKeysConstant.login.incorrectCredentials);
         }
 
         if(!user.email_verified){
-            throw new UnauthorizedException(errorMessagesConstant.login.emailIsNotVerified);
+            throw new UnauthorizedException(errorKeysConstant.login.emailIsNotVerified);
         }
 
         return user;
